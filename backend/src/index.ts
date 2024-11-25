@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-
 import "express-async-errors";
 import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
@@ -11,14 +10,14 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 // Routers
+import authRouter from "./routes/auth.routes";
 // import userRouter from "./routes/user.routes.ts";
-// import authRouter from "./routes/auth.routes.ts";
 
 // Middleware
-// import notFoundMiddleware from "./middleware/not-found";
-// import errorHandlerMiddleware from "./middleware/error-handler";
+import notFoundMiddleware from "./middlewares/not-found";
+import errorHandlerMiddleware from "./middlewares/error-handler";
 
-// const __dirname = dirname(fileURLToPath(import.meta.url));
+// const __dirname = dirname(fileURLToPath(import.meta.url)); // Uncomment if you have a frontend
 
 // Initialize Express app
 const app = express();
@@ -31,13 +30,17 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
+
 // app.use(express.static(resolve(__dirname, "./client/dist"))); // Uncomment if you have a frontend
 
 // Security
 app.use(helmet());
 
 // Routes
-// app.use("/api/v1/auth", authRouter);
+app.get("/", (req: Request, res: Response) => {
+  res.json({ msg: "Hello World" });
+});
+app.use("/api/v1/auth", authRouter);
 // app.use("/api/v1/users", userRouter);
 
 // Serve static files in production
@@ -47,8 +50,9 @@ app.use(helmet());
 // });
 
 // Error handling
-// app.use(notFoundMiddleware);
+app.use(notFoundMiddleware);
 // app.use(errorHandlerMiddleware);
+app.use(errorHandlerMiddleware);
 
 // Port
 const port = process.env.PORT || 3000;
