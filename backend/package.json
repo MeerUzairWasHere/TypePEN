@@ -4,7 +4,8 @@
   "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc -b && node dist/index.js",
+    "dev": "./scripts/run.sh"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,21 @@
   "bugs": {
     "url": "https://github.com/MeerUzairWasHere/TypePEN/issues"
   },
-  "homepage": "https://github.com/MeerUzairWasHere/TypePEN#readme"
+  "homepage": "https://github.com/MeerUzairWasHere/TypePEN#readme",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "prisma": "^5.22.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.9.3"
+  }
 }
