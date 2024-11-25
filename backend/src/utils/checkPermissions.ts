@@ -1,4 +1,4 @@
-import { UnauthorizedError } from "../errors/customError";
+import { UnauthorizedError } from "../errors";
 
 interface RequestUser {
   role: string;

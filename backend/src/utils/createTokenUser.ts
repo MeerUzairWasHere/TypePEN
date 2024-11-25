@@ -1,15 +1,24 @@
 interface User {
+  id: number;
   name: string;
-  _id: string;
+  email: string;
+  password: string;
   role: string;
+  verificationToken: string | null;
+  isVerified: boolean;
+  verified: Date | null;
+  passwordToken: string | null;
+  passwordTokenExpirationDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface TokenUser {
   name: string;
-  userId: string;
+  userId: number;
   role: string;
 }
 
 export const createTokenUser = (user: User): TokenUser => {
-  return { name: user.name, userId: user._id, role: user.role };
+  return { name: user.name, userId: user.id, role: user.role };
 };
