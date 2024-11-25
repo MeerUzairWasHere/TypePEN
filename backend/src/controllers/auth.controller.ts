@@ -1,25 +1,18 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError, UnauthenticatedError } from "../errors/customError";
+import { BadRequestError, UnauthenticatedError } from "../errors";
 import { randomBytes } from "crypto";
 
-// import {
-//   hashString,
-//   sendResetPasswordEmail,
-//   sendVerificationEmail,
-//   createTokenUser,
-//   attachCookiesToResponse,
-// } from "../utils";
+import {
+  hashString,
+  sendResetPasswordEmail,
+  // sendVerificationEmail,
+  createTokenUser,
+  attachCookiesToResponse,
+} from "../utils";
 
 import { comparePassword, hashPassword } from "../utils/passwordUtils";
 import { prismaClient } from "../db";
-
-// Define types for requests containing user and token information
-interface UserRequest extends Request {
-  user?: {
-    userId: string;
-  };
-}
 
 export const registerUser = async (
   req: Request,
@@ -61,146 +54,178 @@ export const registerUser = async (
   });
 };
 
-// export const verifyEmail = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   const { verificationToken, email } = req.body;
-//   const user = await User.findOne({ email });
+export const verifyEmail = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { verificationToken, email } = req.body;
+  const user = await prismaClient.user.findUnique({ where: { email } });
 
-//   if (!user) {
-//     throw new UnauthenticatedError("Verification Failed");
-//   }
+  if (!user) {
+    throw new UnauthenticatedError("Verification Failed");
+  }
 
-//   if (user.verificationToken !== verificationToken) {
-//     throw new UnauthenticatedError("Verification Failed");
-//   }
+  if (user.verificationToken !== verificationToken) {
+    throw new UnauthenticatedError("Verification Failed");
+  }
 
-//   user.isVerified = true;
-//   user.verified = new Date();
-//   user.verificationToken = "";
+  user.isVerified = true;
+  user.verified = new Date();
+  user.verificationToken = "";
 
-//   await user.save();
+  await prismaClient.user.update({
+    where: { email },
+    data: user,
+  });
 
-//   res.status(StatusCodes.OK).json({ msg: "Email Verified" });
-// };
+  res.status(StatusCodes.OK).json({ msg: "Email Verified" });
+};
 
-// export const login = async (req: Request, res: Response): Promise<void> => {
-//   const { email, password } = req.body;
+export const login = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
 
-//   const user = await User.findOne({ email });
+  // Step 1: Find user by email
+  const user = await prismaClient.user.findUnique({ where: { email } });
 
-//   if (!user) {
-//     throw new UnauthenticatedError("Invalid Credentials");
-//   }
+  if (!user) {
+    throw new UnauthenticatedError("Invalid Credentials");
+  }
 
-//   const isPasswordCorrect = await comparePassword(password, user.password);
+  // Step 2: Compare passwords
+  const isPasswordCorrect = await comparePassword(password, user.password);
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError("Invalid Credentials");
+  }
 
-//   if (!isPasswordCorrect) {
-//     throw new UnauthenticatedError("Invalid Credentials");
-//   }
-//   if (!user.isVerified) {
-//     throw new UnauthenticatedError("Please verify your email");
-//   }
+  // Step 3: Verify user's email status
+  if (!user.isVerified) {
+    throw new UnauthenticatedError("Please verify your email");
+  }
 
-//   const tokenUser = createTokenUser(user);
+  // Step 4: Create token payload for the user
+  const tokenUser = createTokenUser(user);
 
-//   // Check for existing token or create a new one
-//   let refreshToken = "";
-//   const existingToken = await Token.findOne({ user: user._id });
+  // Step 5: Check for existing token or create a new one
+  let refreshToken: string;
+  // const existingToken = await Token.findOne({ user: user._id });
+  const existingToken = await prismaClient.token.findFirst({
+    where: { user: { id: user.id } },
+  });
 
-//   if (existingToken) {
-//     if (!existingToken.isValid) {
-//       throw new UnauthenticatedError("Invalid Credentials");
-//     }
-//     refreshToken = existingToken.refreshToken;
-//   } else {
-//     refreshToken = randomBytes(40).toString("hex");
-//     const userAgent = req.headers["user-agent"];
-//     const ip = req.ip;
-//     const userToken = { refreshToken, ip, userAgent, user: user._id };
-//     await Token.create(userToken);
-//   }
+  if (existingToken) {
+    if (!existingToken.isValid) {
+      throw new UnauthenticatedError("Invalid Credentials");
+    }
+    refreshToken = existingToken.refreshToken;
+  } else {
+    refreshToken = randomBytes(40).toString("hex");
+    const userAgent = req.headers["user-agent"] || "unknown";
+    const ip = req.ip;
+    if (!ip) {
+      throw new BadRequestError("IP address is required");
+    }
+    await prismaClient.token.create({
+      data: {
+        refreshToken,
+        ip,
+        userAgent,
+        userId: user.id, // Match schema
+      },
+    });
+  }
 
-//   attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-//   res.status(StatusCodes.OK).json({ user: tokenUser });
-// };
+  // Step 6: Attach cookies and respond
+  attachCookiesToResponse({ res, user: tokenUser, refreshToken });
 
-// export const logout = async (
-//   req: UserRequest,
-//   res: Response
-// ): Promise<void> => {
-//   await Token.findOneAndDelete({ user: req.user?.userId });
+  res.status(StatusCodes.OK).json({ user: tokenUser });
+};
 
-//   res.cookie("accessToken", "logout", {
-//     httpOnly: true,
-//     expires: new Date(Date.now()),
-//   });
-//   res.cookie("refreshToken", "logout", {
-//     httpOnly: true,
-//     expires: new Date(Date.now()),
-//   });
-//   res.status(StatusCodes.OK).json({ msg: "User logged out!" });
-// };
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  if (!req.user?.userId) {
+    throw new BadRequestError("User ID is required");
+  }
 
-// export const forgotPassword = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   const { email } = req.body;
-//   if (!email) {
-//     throw new BadRequestError("Please provide a valid email");
-//   }
+  await prismaClient.token.deleteMany({
+    where: {
+      userId: Number(req?.user?.userId),
+    },
+  });
 
-//   const user = await User.findOne({ email });
+  res.cookie("accessToken", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+  res.cookie("refreshToken", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+  res.status(StatusCodes.OK).json({ msg: "User logged out!" });
+};
 
-//   if (user) {
-//     const passwordToken = randomBytes(70).toString("hex");
-//     const origin = "http://localhost:3000";
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { email } = req.body;
+  if (!email) {
+    throw new BadRequestError("Please provide a valid email");
+  }
 
-//     await sendResetPasswordEmail({
-//       name: user.name,
-//       email: user.email,
-//       token: passwordToken,
-//       origin,
-//     });
+  const user = await prismaClient.user.findUnique({ where: { email } });
 
-//     const tenMinutes = 1000 * 60 * 10;
-//     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
+  if (user) {
+    const passwordToken = randomBytes(70).toString("hex");
+    const origin = "http://localhost:3000";
 
-//     user.passwordToken = hashString(passwordToken);
-//     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
-//     await user.save();
-//   }
+    // await sendResetPasswordEmail({
+    //   name: user.name,
+    //   email: user.email,
+    //   token: passwordToken,
+    //   origin,
+    // });
 
-//   res
-//     .status(StatusCodes.OK)
-//     .json({ msg: "Please check your email for reset password link" });
-// };
+    const tenMinutes = 1000 * 60 * 10;
+    const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
 
-// export const resetPassword = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   const { token, email, newPassword } = req.body;
+    user.passwordToken = hashString(passwordToken);
+    user.passwordTokenExpirationDate = passwordTokenExpirationDate;
+    await prismaClient.user.update({
+      where: { email },
+      data: user,
+    });
+  }
 
-//   const user = await User.findOne({ email });
-//   if (!user) {
-//     throw new BadRequestError("Invalid or expired token");
-//   }
+  res
+    .status(StatusCodes.OK)
+    .json({ msg: "Please check your email for reset password link" });
+};
 
-//   const isTokenValid =
-//     user.passwordToken === hashString(token) &&
-//     user.passwordTokenExpirationDate &&
-//     user.passwordTokenExpirationDate > new Date();
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { token, email, newPassword } = req.body;
 
-//   if (isTokenValid) {
-//     user.password = await hashPassword(newPassword);
-//     user.passwordToken = null;
-//     user.passwordTokenExpirationDate = null;
-//     await user.save();
-//     res.status(StatusCodes.OK).json({ msg: "Password reset successfully!" });
-//   } else {
-//     throw new BadRequestError("Invalid or expired token");
-//   }
-// };
+  const user = await prismaClient.user.findUnique({ where: { email } });
+  if (!user) {
+    throw new BadRequestError("Invalid or expired token");
+  }
+
+  const isTokenValid =
+    user.passwordToken === hashString(token) &&
+    user.passwordTokenExpirationDate &&
+    user.passwordTokenExpirationDate > new Date();
+
+  if (isTokenValid) {
+    user.password = await hashPassword(newPassword);
+    user.passwordToken = null;
+    user.passwordTokenExpirationDate = null;
+    await prismaClient.user.update({
+      where: { email },
+      data: user,
+    });
+    res.status(StatusCodes.OK).json({ msg: "Password reset successfully!" });
+  } else {
+    throw new BadRequestError("Invalid or expired token");
+  }
+};
