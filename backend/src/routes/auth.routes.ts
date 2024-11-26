@@ -3,13 +3,13 @@ import { Request, Response, NextFunction } from "express";
 
 import { authenticateUser } from "../middlewares/authentication";
 
-// import {
-//   validateRegisterInput,
-//   validateLoginInput,
-//   validateVerifyEmailInput,
-//   validateForgotPasswordInput,
-//   validateResetPasswordInput,
-// } from "../middleware/validationMiddleware";
+import {
+  validateRegisterInput,
+  validateLoginInput,
+  validateVerifyEmailInput,
+  validateForgotPasswordInput,
+  validateResetPasswordInput,
+} from "../middlewares/validationMiddleware";
 
 import {
   registerUser,
@@ -24,13 +24,13 @@ const router = Router();
 
 router.post(
   "/register",
-  //   validateRegisterInput,
+  validateRegisterInput,
   (req: Request, res: Response, next: NextFunction) => registerUser(req, res)
 );
 
 router.post(
   "/login",
-  // validateLoginInput,
+  validateLoginInput,
   (req: Request, res: Response, next: NextFunction) => login(req, res)
 );
 
@@ -42,19 +42,19 @@ router.delete(
 
 router.post(
   "/verify-email",
-  // validateVerifyEmailInput,
+  validateVerifyEmailInput,
   (req: Request, res: Response, next: NextFunction) => verifyEmail(req, res)
 );
 
 router.post(
   "/forgot-password",
-  // validateForgotPasswordInput,
+  validateForgotPasswordInput,
   (req: Request, res: Response, next: NextFunction) => forgotPassword(req, res)
 );
 
 router.post(
   "/reset-password",
-  // validateResetPasswordInput,
+  validateResetPasswordInput,
   (req: Request, res: Response, next: NextFunction) => resetPassword(req, res)
 );
 
