@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 
 // Routers
 import authRouter from "./routes/auth.routes";
-// import userRouter from "./routes/user.routes.ts";
+import userRouter from "./routes/user.routes";
 
 // Middleware
 import notFoundMiddleware from "./middlewares/not-found";
@@ -41,7 +41,7 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ msg: "Hello World" });
 });
 app.use("/api/v1/auth", authRouter);
-// app.use("/api/v1/users", userRouter);
+app.use("/api/v1/users", userRouter);
 
 // Serve static files in production
 // Uncomment the below line if you have a frontend to serve in production

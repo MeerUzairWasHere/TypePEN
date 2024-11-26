@@ -189,15 +189,21 @@ export const forgotPassword = async (
 
     user.passwordToken = hashString(passwordToken);
     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
+
     await prismaClient.user.update({
       where: { email },
       data: user,
     });
+
+    res.status(StatusCodes.OK).json({
+      name: user?.name,
+      email: user?.email,
+      token: passwordToken,
+      origin,
+    });
   }
 
-  res
-    .status(StatusCodes.OK)
-    .json({ msg: "Please check your email for reset password link" });
+  res.status(StatusCodes.OK).json({ msg: "User not found!" });
 };
 
 export const resetPassword = async (
