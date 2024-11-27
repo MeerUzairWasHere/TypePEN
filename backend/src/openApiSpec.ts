@@ -87,7 +87,7 @@ export const openApiSpec = {
                 schema: {
                   type: "object",
                   properties: {
-                    user: { $ref: "#/components/schemas/TokenUser" },
+                    user: { $ref: "#/components/schemas/Token " },
                   },
                 },
               },
@@ -342,7 +342,7 @@ export const openApiSpec = {
           updatedAt: { type: "string", format: "date-time" },
         },
       },
-      Token: {
+      Token : {
         type: "object",
         properties: {
           id: { type: "integer" },
