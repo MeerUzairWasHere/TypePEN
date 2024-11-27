@@ -37,9 +37,6 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(helmet());
 
 // Routes
-app.get("/", (req: Request, res: Response) => {
-  res.json({ msg: "Hello World" });
-});
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 
