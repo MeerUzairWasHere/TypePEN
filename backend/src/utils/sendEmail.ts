@@ -1,9 +1,4 @@
-import {
-  createTestAccount,
-  createTransport,
-  Transporter,
-  SendMailOptions,
-} from "nodemailer";
+import { createTestAccount, createTransport } from "nodemailer";
 import config from "./nodemailerConfig.js";
 
 interface EmailOptions {
@@ -19,9 +14,9 @@ export const sendEmail = async ({
 }: EmailOptions): Promise<void> => {
   const testAccount = await createTestAccount();
 
-  const transporter: Transporter = createTransport(config);
+  const transporter = createTransport(config);
 
-  const mailOptions: SendMailOptions = {
+  const mailOptions = {
     from: '"John Doe" <john.doe@example.com>', // sender address
     to,
     subject,

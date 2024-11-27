@@ -4,10 +4,10 @@
   "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
-    "start": "tsc -b && node dist/index.js",
+    "start": "tsc -b && node ./dist/index.js",
     "dev": "./scripts/run.sh",
     "dev:migrate": "bash ./scripts/migrate.sh",
-    "build": "esbuild ./src --outfile=./dist/index.js --bundle --minify --platform=node"
+    "build": "npm i && tsc"
   },
   "repository": {
     "type": "git",
