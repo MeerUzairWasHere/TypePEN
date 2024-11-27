@@ -12,9 +12,13 @@ export const openApiSpec = {
     },
   },
   servers: [
+    // {
+    //   url: "http://localhost:3000/api/v1",
+    //   description: "Development server",
+    // },
     {
-      url: "http://localhost:3000/api/v1",
-      description: "Development server",
+      url: "https://typepen.onrender.com/api/v1",
+      description: "Live Server",
     },
   ],
   paths: {
