@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsc -b && node dist/index.js",
     "dev": "./scripts/run.sh",
-    "dev:migrate": "bash ./scripts/migrate.sh"
+    "dev:migrate": "bash ./scripts/migrate.sh",
+    "build": "esbuild ./src --outfile=./dist/index.js --bundle --minify --platform=node"
   },
   "repository": {
     "type": "git",
