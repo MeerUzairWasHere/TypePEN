@@ -40,8 +40,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "prisma": "^5.22.0",
-    "swagger-ui-express": "^5.0.1",
-    "typescript": "^5.7.2"
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
