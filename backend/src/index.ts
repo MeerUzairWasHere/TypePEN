@@ -56,7 +56,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 app.get("*", (req, res) => {
-  res.redirect("/documentation");
+  res.redirect("/documentation"); // comment out this route when starting
 });
 
 // Serve static files in production
