@@ -7,7 +7,8 @@
     "start": "tsc -b && node ./dist/index.js",
     "dev": "./scripts/run.sh",
     "dev:migrate": "bash ./scripts/migrate.sh",
-    "build": "npm i && tsc"
+    "build": "npm i && tsc",
+    "setup": "npm i"
   },
   "repository": {
     "type": "git",
