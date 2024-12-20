@@ -9,13 +9,20 @@ import {
 } from "../utils";
 
 import { prismaClient } from "../db";
+import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
 
-export const showCurrentUser = async (req: Request, res: Response) => {
-  res.status(StatusCodes.OK).json({ user: req.user });
+export const showCurrentUser = async (
+  req: Request,
+  res: Response<{ user: TokenUser | undefined }>
+) => {
+  res.status(StatusCodes.OK).json({ user: req?.user });
 };
 
 // Update user information
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (
+  req: Request<{}, {}, UpdateUserInput>,
+  res: Response<{ user: TokenUser }>
+) => {
   const { email, name } = req.body;
 
   // Update the user with Prisma
@@ -30,7 +37,10 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 // Update user password
-export const updateUserPassword = async (req: Request, res: Response) => {
+export const updateUserPassword = async (
+  req: Request<{}, {}, UpdatePasswordInput>,
+  res: Response<{ msg: string }>
+) => {
   const { oldPassword, newPassword } = req.body;
 
   const user = await prismaClient.user.findUnique({

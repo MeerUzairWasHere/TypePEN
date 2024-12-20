@@ -1,16 +1,27 @@
-import { body, validationResult, ValidationChain } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError, UnauthorizedError } from "../errors";
-import { prismaClient } from "../db";
+import { z, ZodSchema } from "zod";
+import {
+  validateForgotPasswordInput,
+  validateLoginInput,
+  validateRegisterInput,
+  validateResetPasswordInput,
+  validateUpdatePasswordInput,
+  validateUpdateUserInput,
+  validateVerifyEmailInput,
+} from "../types";
 
-// Utility function to handle validation errors
-const withValidationErrors = (validateValues: ValidationChain[]) => {
-  return [
-    ...validateValues,
-    (req: Request, res: Response, next: NextFunction) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        const errorMessages = errors.array().map((error) => error.msg);
+// Utility function to handle Zod validation errors
+const withValidationErrors =
+  <T>(schema: ZodSchema<T>) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Parse and validate the request body with the provided schema
+      await schema.parseAsync(req.body);
+      next();
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const errorMessages = err.errors.map((error) => error.message);
         const firstMessage = errorMessages[0];
 
         if (firstMessage.startsWith("not authorized")) {
@@ -18,93 +29,34 @@ const withValidationErrors = (validateValues: ValidationChain[]) => {
         }
         throw new BadRequestError(errorMessages.join(", "));
       }
-      next();
-    },
-  ];
-};
+      next(err);
+    }
+  };
 
-export const validateRegisterInput = withValidationErrors([
-  body("name").notEmpty().withMessage("name is required"),
-  body("email")
-    .notEmpty()
-    .withMessage("email is required")
-    .isEmail()
-    .withMessage("invalid email format")
-    .custom(async (email) => {
-      const user = await prismaClient.user.findUnique({ where: { email } });
-      if (user) {
-        throw new BadRequestError("email already exists");
-      }
-    }),
-  body("password")
-    .notEmpty()
-    .withMessage("password is required")
-    .isLength({ min: 8 })
-    .withMessage("password must be at least 8 characters long"),
-]);
+// Apply validation middleware
+export const validateRegisterInputMiddleware = withValidationErrors(
+  validateRegisterInput
+);
 
-export const validateLoginInput = withValidationErrors([
-  body("email")
-    .notEmpty()
-    .withMessage("email is required")
-    .isEmail()
-    .withMessage("invalid email format"),
-  body("password").notEmpty().withMessage("password is required"),
-]);
+export const validateResetPasswordInputMiddleware = withValidationErrors(
+  validateResetPasswordInput
+);
 
-export const validateUpdateUserInput = withValidationErrors([
-  body("name").notEmpty().withMessage("name is required"),
-  body("email")
-    .notEmpty()
-    .withMessage("email is required")
-    .isEmail()
-    .withMessage("invalid email format")
-    .custom(async (email, { req }) => {
-      const user = await prismaClient.user.findUnique({ where: { email } });
-      if (user && user.id !== Number((req as Request).user?.userId)) {
-        throw new BadRequestError("email already exists");
-      }
-    }),
-]);
+export const validateForgotPasswordInputMiddleware = withValidationErrors(
+  validateForgotPasswordInput
+);
 
-export const validateUpdatePasswordInput = withValidationErrors([
-  body("oldPassword").notEmpty().withMessage("oldPassword is required"),
-  body("newPassword")
-    .notEmpty()
-    .withMessage("newPassword is required")
-    .isLength({ min: 8 })
-    .withMessage("password must be at least 8 characters long"),
-]);
+export const validateVerifyEmailInputMiddleware = withValidationErrors(
+  validateVerifyEmailInput
+);
 
-export const validateVerifyEmailInput = withValidationErrors([
-  body("verificationToken")
-    .notEmpty()
-    .withMessage("verificationToken is required"),
-  body("email")
-    .notEmpty()
-    .withMessage("email is required")
-    .isEmail()
-    .withMessage("invalid email format"),
-]);
+export const validateUpdatePasswordInputMiddleware = withValidationErrors(
+  validateUpdatePasswordInput
+);
 
-export const validateForgotPasswordInput = withValidationErrors([
-  body("email")
-    .notEmpty()
-    .withMessage("email is required")
-    .isEmail()
-    .withMessage("invalid email format"),
-]);
+export const validateUpdateUserInputMiddleware = withValidationErrors(
+  validateUpdateUserInput
+);
 
-export const validateResetPasswordInput = withValidationErrors([
-  body("token").notEmpty().withMessage("token is required"),
-  body("newPassword")
-    .notEmpty()
-    .withMessage("newPassword is required")
-    .isLength({ min: 8 })
-    .withMessage("password must be at least 8 characters long"),
-  body("email")
-    .notEmpty()
-    .withMessage("email is required")
-    .isEmail()
-    .withMessage("invalid email format"),
-]);
+export const validateLoginInputMiddleware =
+  withValidationErrors(validateLoginInput);

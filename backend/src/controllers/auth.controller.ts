@@ -13,11 +13,20 @@ import {
 
 import { comparePassword, hashPassword } from "../utils/passwordUtils";
 import { prismaClient } from "../db";
+import { User } from "@prisma/client";
+import {
+  ForgotPasswordInput,
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+  TokenUser,
+  VerifyEmailInput,
+} from "../types";
 
 export const registerUser = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+  req: Request<{}, {}, RegisterInput>,
+  res: Response<{ user: User; msg: string }>
+) => {
   const { email, name, password } = req.body;
 
   // Check if this is the first account to set role as admin
@@ -49,39 +58,15 @@ export const registerUser = async (
   //   });
 
   res.status(StatusCodes.CREATED).json({
-    msg: "User created successfully",
     user,
+    msg: "User created successfully",
   });
 };
 
-export const verifyEmail = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { verificationToken, email } = req.body;
-  const user = await prismaClient.user.findUnique({ where: { email } });
-
-  if (!user) {
-    throw new UnauthenticatedError("Verification Failed");
-  }
-
-  if (user.verificationToken !== verificationToken) {
-    throw new UnauthenticatedError("Verification Failed");
-  }
-
-  user.isVerified = true;
-  user.verified = new Date();
-  user.verificationToken = "";
-
-  await prismaClient.user.update({
-    where: { email },
-    data: user,
-  });
-
-  res.status(StatusCodes.OK).json({ msg: "Email Verified" });
-};
-
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (
+  req: Request<{}, {}, LoginInput>,
+  res: Response<{ user: TokenUser }>
+) => {
   const { email, password } = req.body;
 
   // Step 1: Find user by email
@@ -140,7 +125,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
-export const logout = async (req: Request, res: Response): Promise<void> => {
+export const verifyEmail = async (
+  req: Request<{}, {}, VerifyEmailInput>,
+  res: Response<{ msg: string }>
+) => {
+  const { verificationToken, email } = req.body;
+  const user = await prismaClient.user.findUnique({ where: { email } });
+
+  if (!user) {
+    throw new UnauthenticatedError("Verification Failed");
+  }
+
+  if (user.verificationToken !== verificationToken) {
+    throw new UnauthenticatedError("Verification Failed");
+  }
+
+  user.isVerified = true;
+  user.verified = new Date();
+  user.verificationToken = "";
+
+  await prismaClient.user.update({
+    where: { email },
+    data: user,
+  });
+
+  res.status(StatusCodes.OK).json({ msg: "Email Verified" });
+};
+
+export const logout = async (req: Request, res: Response<{ msg: string }>) => {
   if (!req.user?.userId) {
     throw new BadRequestError("User ID is required");
   }
@@ -163,10 +175,19 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const forgotPassword = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+  req: Request<{}, {}, ForgotPasswordInput>,
+  res: Response<
+    | {
+        name: string;
+        email: string;
+        token: string;
+        origin: string;
+      }
+    | { msg: string }
+  >
+) => {
   const { email } = req.body;
+
   if (!email) {
     throw new BadRequestError("Please provide a valid email");
   }
@@ -207,9 +228,9 @@ export const forgotPassword = async (
 };
 
 export const resetPassword = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+  req: Request<{}, {}, ResetPasswordInput>,
+  res: Response<{ msg: string }>
+) => {
   const { token, email, newPassword } = req.body;
 
   const user = await prismaClient.user.findUnique({ where: { email } });
