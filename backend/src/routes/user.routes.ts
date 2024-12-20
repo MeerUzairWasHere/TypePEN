@@ -9,8 +9,8 @@ import {
 const router = Router();
 
 import {
-  validateUpdateUserInput,
-  validateUpdatePasswordInput,
+  validateUpdateUserInputMiddleware,
+  validateUpdatePasswordInputMiddleware,
 } from "../middlewares/validationMiddleware";
 
 router.route("/current-user").get(
@@ -22,13 +22,13 @@ router.route("/current-user").get(
 router.route("/updateUser").patch(
   (req: Request, res: Response, next: NextFunction) =>
     authenticateUser(req, res, next),
-  validateUpdateUserInput,
+  validateUpdateUserInputMiddleware,
   (req: Request, res: Response, next: NextFunction) => updateUser(req, res)
 );
 router.route("/updateUserPassword").patch(
   (req: Request, res: Response, next: NextFunction) =>
     authenticateUser(req, res, next),
-  validateUpdatePasswordInput,
+  validateUpdatePasswordInputMiddleware,
   (req: Request, res: Response, next: NextFunction) =>
     updateUserPassword(req, res)
 );
