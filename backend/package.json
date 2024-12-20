@@ -1,6 +1,6 @@
 {
   "name": "type-pen",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
