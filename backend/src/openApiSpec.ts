@@ -17,7 +17,7 @@ export const openApiSpec = {
     //   description: "Development server",
     // },
     {
-      url: "https://typepen.onrender.com/api/v1",
+      url: "https://typepen-hi81.onrender.com/api/v1",
       description: "Live Server",
     },
   ],
