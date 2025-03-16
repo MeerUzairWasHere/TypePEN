@@ -84,15 +84,6 @@ const errorHandlerMiddleware = (
     customError.statusCode = StatusCodes.BAD_REQUEST;
   }
 
-  // Handle custom application errors
-  if (
-    err instanceof Error &&
-    !(err instanceof Prisma.PrismaClientKnownRequestError)
-  ) {
-    customError.msg = err.message;
-    customError.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-  }
-
   // Handle validation errors (e.g., Mongoose)
   if (err.name === "ValidationError") {
     customError.msg = Object.values(err.errors)
