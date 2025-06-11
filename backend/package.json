@@ -8,7 +8,8 @@
     "dev": "npx prisma generate && npm run start",
     "dev:migrate": "npx prisma migrate dev",
     "build": "npm i && tsc -b",
-    "setup": "npm i"
+    "setup": "npm i",
+    "db": "docker-compose up -d"
   },
   "repository": {
     "type": "git",
