@@ -6,7 +6,9 @@
   "scripts": {
     "start": "tsc -b && node ./dist/index.js",
     "dev": "npx prisma generate && npm run start",
-    "dev:migrate": "npx prisma migrate dev",
+    "dev:migrate": "npx prisma migrate deploy ",
+    "migrate": "npx prisma migrate dev",
+    "generate": "npx prisma generate",
     "build": "npm i && tsc -b",
     "setup": "npm i",
     "db": "docker-compose up -d"
