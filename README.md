@@ -1,23 +1,26 @@
 # TypeScript Backend Starter with PostgreSQL, Express, and Node.js
 
-A flexible backend starter built with **TypeScript**, **PostgreSQL**, **Express**, and **Node.js**. This boilerplate is designed to be backend-agnostic, allowing you to easily connect it with any frontend framework, such as **React**, **Angular**, **Vue**, or any custom solution.
+A flexible backend starter built with **TypeScript**, **PostgreSQL**, **Express**, and **Node.js**. This boilerplate is designed to be backend-agnostic, allowing you to easily connect it with any frontend framework such as **React**, **Angular**, **Vue**, or a custom solution.
 
 ## Features
 
-- **TypeScript**: Strongly typed JavaScript for better development experience.
-- **Express**: Fast, minimal web framework for Node.js.
-- **PostgreSQL**: Powerful, open-source relational database.
-- **Backend-Agnostic**: Ready to connect with any frontend framework.
-- **Easy Setup**: Simple steps to get up and running.
+* **TypeScript**: Strongly typed JavaScript for a better development experience.
+* **Express**: Minimal and flexible Node.js web application framework.
+* **PostgreSQL**: Powerful open-source relational database.
+* **Backend-Agnostic**: Easily connect to any frontend.
+* **Easy Setup**: Quick initialization and project bootstrapping.
+* **Docker Support**: Spin up PostgreSQL instantly with Docker.
 
 ## Requirements
 
-- **Node.js** (v14 or later)
-- **PostgreSQL** (v12 or later)
+* **Node.js** (v14 or later)
+* **Docker** (optional, for local PostgreSQL setup)
+
+---
 
 ## Getting Started
 
-### Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/MeerUzairWasHere/TypePEN.git
@@ -26,99 +29,109 @@ cd TypePEN
 
 ---
 
-### Install Dependencies
-
-Run the following command to install the necessary dependencies:
+### 2. Install Dependencies
 
 ```bash
 cd backend && npm install
 ```
 
-- **Make sure you have TypeScript installed globally**. If not, you can install it globally with:
-
-  ```bash
-  npm install -g typescript
-  ```
-
-  Or, you can install TypeScript as a project dependency:
-
-  ```bash
-  npm install --save-dev typescript
-  ```
-
-### Set Up Environment Variables
-
-1. **Get a remote PostgreSQL database**. You can use services like [ElephantSQL](https://www.elephantsql.com/), [NeonDB](https://neon.tech/), or any other PostgreSQL provider to create a database instance.
-
-2. **Rename the `.env.example` file** to `.env` and paste the PostgreSQL connection string into the `DATABASE_URL` variable:
-
-   Example:
-   ```env
-   DATABASE_URL=your-postgresql-connection-string
-   ```
-
-   Make sure to replace `your-postgresql-connection-string` with the actual URL you get from your PostgreSQL provider.
-
-### Running Database Migrations
-
-For the **first-time database migration**, run the following command:
+If you don't have TypeScript installed globally, install it with:
 
 ```bash
-npm run dev:migrate --init
+npm install -g typescript
 ```
 
-This will create the necessary tables and apply the initial migrations to your database.
-
-For **subsequent migrations**, use the following command:
+Or install it locally in the project:
 
 ```bash
-npm run dev:migrate your-migration-name
+npm install --save-dev typescript
 ```
 
-Replace `your-migration-name` with the appropriate name for the migration you want to apply.
+---
 
-### Running the Backend
+### 3. Set Up the Database
 
-To **start the backend normally**, use the following command:
+You have **two options** to set up the PostgreSQL database:
+
+#### Option A: Use a Remote PostgreSQL Provider
+
+1. Use services like [Neon](https://neon.tech), [ElephantSQL](https://www.elephantsql.com/), or your own hosted PostgreSQL.
+2. Copy the connection string.
+3. Rename `.env.example` to `.env` and paste your connection string:
+
+```env
+DATABASE_URL=your-remote-postgresql-connection-string
+```
+
+---
+
+#### Option B: Use Docker Locally
+
+1. Run the following command to spin up a PostgreSQL container:
+
+```bash
+npm run db
+```
+
+> This will create a PostgreSQL instance using Docker with default credentials defined in your `.env` file.
+
+---
+
+### 4. Run Migrations
+
+Before starting the server for the first time, apply the initial database schema:
+
+```bash
+npm run dev:migrate
+```
+
+> This command pushes the initial Prisma migration files to the database.
+
+---
+
+### 5. Start the Server
+
+Run the backend server:
 
 ```bash
 npm run dev
 ```
 
-After running the backend, you will see a log message like this in the terminal:
+If everything is set up correctly, you’ll see:
 
 ```
 Server is listening on http://localhost:3000/
 ```
 
-The server will be running on whatever port is specified in your `.env` file (default is port 3000). You can now connect your backend to any frontend framework (React, Angular, Vue, etc.) and start building your application!
-
-#### **First-time Run**
-
-- On the **first-time** run of the application, it will redirect you to a documentation page. This is typically used for API documentation generated by Swagger UI.
-  
-**Note**: If you do not want the Swagger UI documentation page to appear, **comment out or remove** the related Swagger UI code in your `app.ts` or wherever it is configured. This can be found in the section where you have set up API documentation.
-
-## Connecting with Frontend Frameworks
-
-This backend is designed to be easily connected with **React**, **Angular**, **Vue**, or any other frontend framework. You can create RESTful API endpoints and consume them on the frontend.
-
-## Testing (Coming Soon, Stay Tuned!)
-
-You can add tests to the `tests` folder and run them using your preferred testing framework (e.g., Jest, Mocha).
-
-To run tests (once they’re set up):
-
-```bash
-npm run test
-```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+The default port can be changed via the `.env` file.
 
 ---
 
-### Feel free to contact me!
+### 6. Swagger Documentation (Optional)
 
-If you have any questions or need further assistance, feel free to reach out to me. I'm happy to help!
+On first run, the server may redirect you to an API documentation page powered by Swagger UI.
+
+If you **don’t want** Swagger documentation, **comment out or remove** the Swagger-related code in `index.ts`.
+
+---
+
+## Connecting with Frontend Frameworks
+
+This backend can be used with:
+
+* **React**
+* **Vue**
+* **Angular**
+* Or any other frontend via REST API calls.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+### 🙋‍♂️ Need Help?
+
+If you have questions or need help getting started, feel free to reach out!
