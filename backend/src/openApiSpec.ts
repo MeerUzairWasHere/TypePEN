@@ -2,23 +2,22 @@ export const openApiSpec = {
   openapi: "3.0.0",
   info: {
     title: "TypePEN",
-    version: "1.0.0",
+    version: "2.0.0",
     description:
       "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
     contact: {
       name: "Github Repository",
-
       url: "https://github.com/MeerUzairWasHere/TypePEN",
     },
   },
   servers: [
-    // {
-    //   url: "http://localhost:3000/api/v1",
-    //   description: "Development server",
-    // },
     {
       url: "https://typepen-hi81.onrender.com/api/v1",
       description: "Live Server",
+    },
+    {
+      url: "http://localhost:3000/api/v1",
+      description: "Development server",
     },
   ],
   paths: {
