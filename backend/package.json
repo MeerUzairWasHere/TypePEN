@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc -b && node ./dist/index.js",
-    "dev": "./scripts/run.sh",
-    "dev:migrate": "bash ./scripts/migrate.sh",
-    "build": "npm i && tsc",
-    "setup": "npm i"
+    "dev": "npx prisma generate && npm run start",
+    "dev:migrate": "npx prisma migrate dev",
+    "build": "npm i && tsc -b",
+    "setup": "npm i",
+    "db": "docker-compose up -d"
   },
   "repository": {
     "type": "git",
