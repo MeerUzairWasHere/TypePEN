@@ -5,7 +5,7 @@ import { randomBytes } from "crypto";
 
 import {
   hashString,
-  sendResetPasswordEmail,
+  // sendResetPasswordEmail,
   // sendVerificationEmail,
   createTokenUser,
   attachCookiesToResponse,
@@ -25,7 +25,17 @@ import {
 
 export const registerUser = async (
   req: Request<{}, {}, RegisterInput>,
-  res: Response<{ user: User; msg: string }>
+  res: Response<{
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      role: string;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+    msg: string;
+  }>
 ) => {
   const { email, name, password } = req.body;
 
@@ -45,6 +55,14 @@ export const registerUser = async (
       password: hashedPassword,
       role,
       verificationToken,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 
@@ -114,7 +132,7 @@ export const login = async (
         refreshToken,
         ip,
         userAgent,
-        userId: user.id, // Match schema
+        userId: user.id,
       },
     });
   }
