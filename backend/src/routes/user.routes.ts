@@ -1,4 +1,4 @@
-import { NextFunction, Router, Request, Response } from "express";
+import { Router } from "express";
 import { authenticateUser } from "../middlewares/authentication";
 import {
   showCurrentUser,
@@ -13,24 +13,17 @@ import {
   validateUpdatePasswordInputMiddleware,
 } from "../middlewares/validationMiddleware";
 
-router.route("/current-user").get(
-  (req: Request, res: Response, next: NextFunction) =>
-    authenticateUser(req, res, next),
-  (req: Request, res: Response, next: NextFunction) => showCurrentUser(req, res)
-);
+router.route("/current-user").get(authenticateUser, showCurrentUser);
 
-router.route("/updateUser").patch(
-  (req: Request, res: Response, next: NextFunction) =>
-    authenticateUser(req, res, next),
-  validateUpdateUserInputMiddleware,
-  (req: Request, res: Response, next: NextFunction) => updateUser(req, res)
-);
-router.route("/updateUserPassword").patch(
-  (req: Request, res: Response, next: NextFunction) =>
-    authenticateUser(req, res, next),
-  validateUpdatePasswordInputMiddleware,
-  (req: Request, res: Response, next: NextFunction) =>
-    updateUserPassword(req, res)
-);
+router
+  .route("/updateUser")
+  .patch(authenticateUser, validateUpdateUserInputMiddleware, updateUser);
+router
+  .route("/updateUserPassword")
+  .patch(
+    authenticateUser,
+    validateUpdatePasswordInputMiddleware,
+    updateUserPassword
+  );
 
 export default router;
