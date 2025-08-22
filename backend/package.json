@@ -1,12 +1,12 @@
 {
   "name": "type-pen",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
     "start": "tsc -b && node ./dist/index.js",
     "dev": "npx prisma generate && npm run start",
-    "dev:migrate": "npx prisma migrate deploy ",
+    "dev:migrate": "npx prisma migrate deploy",
     "migrate": "npx prisma migrate dev",
     "generate": "npx prisma generate",
     "build": "npm i && tsc -b",
