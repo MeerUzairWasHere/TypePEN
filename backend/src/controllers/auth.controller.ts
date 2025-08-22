@@ -1,19 +1,8 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError, UnauthenticatedError } from "../errors";
-import { randomBytes } from "crypto";
-
-import {
-  hashString,
-  // sendResetPasswordEmail,
-  // sendVerificationEmail,
-  createTokenUser,
-  attachCookiesToResponse,
-} from "../utils";
-
-import { comparePassword, hashPassword } from "../utils/passwordUtils";
-import { prismaClient } from "../db";
-import { User } from "@prisma/client";
+import { BadRequestError } from "../errors";
+import { attachCookiesToResponse } from "../utils";
+import { authService } from "../services/auth.service";
 import {
   ForgotPasswordInput,
   LoginInput,
@@ -25,161 +14,48 @@ import {
 
 export const registerUser = async (
   req: Request<{}, {}, RegisterInput>,
-  res: Response<{
-    user: {
-      id: number;
-      name: string;
-      email: string;
-      role: string;
-      createdAt: Date;
-      updatedAt: Date;
-    };
-    msg: string;
-  }>
+  res: Response
 ) => {
-  const { email, name, password } = req.body;
-
-  // Check if this is the first account to set role as admin
-  const userCount = await prismaClient.user.count();
-  const role = userCount === 0 ? "admin" : "user";
-
-  // Hash the password and generate a verification token
-  const hashedPassword = await hashPassword(password);
-  const verificationToken = randomBytes(40).toString("hex");
-
-  // Create a new user in the database
-  const user = await prismaClient.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      role,
-      verificationToken,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  //   const origin = "http://localhost:5000";
-
-  //   await sendVerificationEmail({
-  //     name: user.name,
-  //     email: user.email,
-  //     verificationToken: user.verificationToken,
-  //     origin,
-  //   });
-
-  res.status(StatusCodes.CREATED).json({
-    user,
-    msg: "User created successfully",
-  });
+  const result = await authService.registerUser(req.body);
+  res.status(StatusCodes.CREATED).json(result);
 };
 
 export const login = async (
   req: Request<{}, {}, LoginInput>,
   res: Response<{ user: TokenUser }>
 ) => {
-  const { email, password } = req.body;
+  const userAgent = req.headers["user-agent"] || "unknown";
+  const ip = req.ip;
 
-  // Step 1: Find user by email
-  const user = await prismaClient.user.findUnique({ where: { email } });
-
-  if (!user) {
-    throw new UnauthenticatedError("Invalid Credentials");
+  if (!ip) {
+    throw new BadRequestError("IP address is required");
   }
 
-  // Step 2: Compare passwords
-  const isPasswordCorrect = await comparePassword(password, user.password);
-  if (!isPasswordCorrect) {
-    throw new UnauthenticatedError("Invalid Credentials");
-  }
+  const { user, refreshToken } = await authService.login(
+    req.body,
+    userAgent,
+    ip
+  );
 
-  // Step 3: Verify user's email status
-  if (!user.isVerified) {
-    throw new UnauthenticatedError("Please verify your email");
-  }
+  attachCookiesToResponse({ res, user, refreshToken });
 
-  // Step 4: Create token payload for the user
-  const tokenUser = createTokenUser(user);
-
-  // Step 5: Check for existing token or create a new one
-  let refreshToken: string;
-  // const existingToken = await Token.findOne({ user: user._id });
-  const existingToken = await prismaClient.token.findFirst({
-    where: { user: { id: user.id } },
-  });
-
-  if (existingToken) {
-    if (!existingToken.isValid) {
-      throw new UnauthenticatedError("Invalid Credentials");
-    }
-    refreshToken = existingToken.refreshToken;
-  } else {
-    refreshToken = randomBytes(40).toString("hex");
-    const userAgent = req.headers["user-agent"] || "unknown";
-    const ip = req.ip;
-    if (!ip) {
-      throw new BadRequestError("IP address is required");
-    }
-    await prismaClient.token.create({
-      data: {
-        refreshToken,
-        ip,
-        userAgent,
-        userId: user.id,
-      },
-    });
-  }
-
-  // Step 6: Attach cookies and respond
-  attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-
-  res.status(StatusCodes.OK).json({ user: tokenUser });
+  res.status(StatusCodes.OK).json({ user });
 };
 
 export const verifyEmail = async (
   req: Request<{}, {}, VerifyEmailInput>,
-  res: Response<{ msg: string }>
+  res: Response
 ) => {
-  const { verificationToken, email } = req.body;
-  const user = await prismaClient.user.findUnique({ where: { email } });
-
-  if (!user) {
-    throw new UnauthenticatedError("Verification Failed");
-  }
-
-  if (user.verificationToken !== verificationToken) {
-    throw new UnauthenticatedError("Verification Failed");
-  }
-
-  user.isVerified = true;
-  user.verified = new Date();
-  user.verificationToken = "";
-
-  await prismaClient.user.update({
-    where: { email },
-    data: user,
-  });
-
-  res.status(StatusCodes.OK).json({ msg: "Email Verified" });
+  const result = await authService.verifyEmail(req.body);
+  res.status(StatusCodes.OK).json(result);
 };
 
-export const logout = async (req: Request, res: Response<{ msg: string }>) => {
+export const logout = async (req: Request, res: Response) => {
   if (!req.user?.userId) {
     throw new BadRequestError("User ID is required");
   }
 
-  await prismaClient.token.deleteMany({
-    where: {
-      userId: Number(req?.user?.userId),
-    },
-  });
+  const result = await authService.logout(Number(req.user.userId));
 
   res.cookie("accessToken", "logout", {
     httpOnly: true,
@@ -189,88 +65,21 @@ export const logout = async (req: Request, res: Response<{ msg: string }>) => {
     httpOnly: true,
     expires: new Date(Date.now()),
   });
-  res.status(StatusCodes.OK).json({ msg: "User logged out!" });
+  res.status(StatusCodes.OK).json(result);
 };
 
 export const forgotPassword = async (
   req: Request<{}, {}, ForgotPasswordInput>,
-  res: Response<
-    | {
-        name: string;
-        email: string;
-        token: string;
-        origin: string;
-      }
-    | { msg: string }
-  >
+  res: Response
 ) => {
-  const { email } = req.body;
-
-  if (!email) {
-    throw new BadRequestError("Please provide a valid email");
-  }
-
-  const user = await prismaClient.user.findUnique({ where: { email } });
-
-  if (user) {
-    const passwordToken = randomBytes(70).toString("hex");
-    const origin = "http://localhost:3000";
-
-    // await sendResetPasswordEmail({
-    //   name: user.name,
-    //   email: user.email,
-    //   token: passwordToken,
-    //   origin,
-    // });
-
-    const tenMinutes = 1000 * 60 * 10;
-    const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
-
-    user.passwordToken = hashString(passwordToken);
-    user.passwordTokenExpirationDate = passwordTokenExpirationDate;
-
-    await prismaClient.user.update({
-      where: { email },
-      data: user,
-    });
-
-    res.status(StatusCodes.OK).json({
-      name: user?.name,
-      email: user?.email,
-      token: passwordToken,
-      origin,
-    });
-  }
-
-  res.status(StatusCodes.OK).json({ msg: "User not found!" });
+  const result = await authService.forgotPassword(req.body);
+  res.status(StatusCodes.OK).json(result);
 };
 
 export const resetPassword = async (
   req: Request<{}, {}, ResetPasswordInput>,
-  res: Response<{ msg: string }>
+  res: Response
 ) => {
-  const { token, email, newPassword } = req.body;
-
-  const user = await prismaClient.user.findUnique({ where: { email } });
-  if (!user) {
-    throw new BadRequestError("Invalid or expired token");
-  }
-
-  const isTokenValid =
-    user.passwordToken === hashString(token) &&
-    user.passwordTokenExpirationDate &&
-    user.passwordTokenExpirationDate > new Date();
-
-  if (isTokenValid) {
-    user.password = await hashPassword(newPassword);
-    user.passwordToken = null;
-    user.passwordTokenExpirationDate = null;
-    await prismaClient.user.update({
-      where: { email },
-      data: user,
-    });
-    res.status(StatusCodes.OK).json({ msg: "Password reset successfully!" });
-  } else {
-    throw new BadRequestError("Invalid or expired token");
-  }
+  const result = await authService.resetPassword(req.body);
+  res.status(StatusCodes.OK).json(result);
 };
