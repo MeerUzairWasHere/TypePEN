@@ -1,5 +1,4 @@
 import { randomBytes } from "crypto";
-import { User } from "@prisma/client";
 import { prismaClient } from "../db";
 import {
   hashString,
@@ -16,10 +15,11 @@ import {
 } from "../types";
 
 import { BadRequestError, UnauthenticatedError } from "../errors";
+import { emailService } from "./email.service";
 
 export class AuthService {
   // User Registration
-  async registerUser(data: RegisterInput) {
+  async registerUser(data: RegisterInput, origin: string) {
     const { email, name, password } = data;
 
     // Check if this is the first account to set role as admin
@@ -47,6 +47,13 @@ export class AuthService {
         createdAt: true,
         updatedAt: true,
       },
+    });
+
+    await emailService.sendVerificationEmail({
+      name,
+      email,
+      verificationToken,
+      origin,
     });
 
     return {
@@ -131,6 +138,11 @@ export class AuthService {
       },
     });
 
+    await emailService.sendWelcomeEmail({
+      name: user.name,
+      email: user.email,
+    });
+
     return { msg: "Email Verified" };
   }
 
@@ -146,7 +158,7 @@ export class AuthService {
   }
 
   // Forgot Password
-  async forgotPassword(data: ForgotPasswordInput) {
+  async forgotPassword(data: ForgotPasswordInput, origin: string) {
     const { email } = data;
 
     if (!email) {
@@ -160,7 +172,6 @@ export class AuthService {
     }
 
     const passwordToken = randomBytes(70).toString("hex");
-    const origin = "http://localhost:3000";
 
     const tenMinutes = 1000 * 60 * 10;
     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
@@ -171,6 +182,13 @@ export class AuthService {
         passwordToken: hashString(passwordToken),
         passwordTokenExpirationDate,
       },
+    });
+
+    await emailService.sendResetPasswordEmail({
+      name: user.name,
+      email: user.email,
+      token: passwordToken,
+      origin,
     });
 
     return {

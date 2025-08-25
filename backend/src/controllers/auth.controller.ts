@@ -16,7 +16,11 @@ export const registerUser = async (
   req: Request<{}, {}, RegisterInput>,
   res: Response
 ) => {
-  const result = await authService.registerUser(req.body);
+  const result = await authService.registerUser(
+    req.body,
+    req.get("origin") || ""
+  );
+
   res.status(StatusCodes.CREATED).json(result);
 };
 
@@ -72,7 +76,11 @@ export const forgotPassword = async (
   req: Request<{}, {}, ForgotPasswordInput>,
   res: Response
 ) => {
-  const result = await authService.forgotPassword(req.body);
+  const result = await authService.forgotPassword(
+    req.body,
+    req.get("origin") || ""
+  );
+
   res.status(StatusCodes.OK).json(result);
 };
 
