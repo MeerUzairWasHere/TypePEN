@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
 import cors from "cors";
-
 import { prismaClient } from "./db";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";

@@ -20,7 +20,7 @@ model User {
   password                    String
   role                        String    @default("user")
   verificationToken           String?
-  isVerified                  Boolean   @default(true) //make it false if using email verification
+  isVerified                  Boolean   @default(false)
   verified                    DateTime?
   passwordToken               String?
   passwordTokenExpirationDate DateTime?
