@@ -40,3 +40,12 @@ model Token {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Company {
+  id      String @id @default(uuid())
+  name    String @unique
+  address String
+  website String
+  phone   String
+  email   String
+}
