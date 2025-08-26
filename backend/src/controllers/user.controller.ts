@@ -17,7 +17,6 @@ export const showCurrentUser = async (
   res.status(StatusCodes.OK).json({ user });
 };
 
-// Update user information
 export const updateUser = async (
   req: Request<{}, {}, UpdateUserInput>,
   res: Response<{ user: TokenUser }>
@@ -37,7 +36,6 @@ export const updateUser = async (
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };
 
-// Update user password
 export const updateUserPassword = async (
   req: Request<{}, {}, UpdatePasswordInput>,
   res: Response<{ msg: string }>
