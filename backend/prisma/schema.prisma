@@ -42,10 +42,12 @@ model Token {
 }
 
 model Company {
-  id      String @id @default(uuid())
-  name    String @unique
-  address String
-  website String
-  phone   String
-  email   String
+  id        String   @id @default(uuid())
+  name      String   @unique @db.VarChar(255)
+  address   String   @db.VarChar(255)
+  website   String   @unique
+  phone     String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
