@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { UnauthenticatedError, UnauthorizedError } from "../errors";
+import { ForbidenError, UnauthenticatedError, UnauthorizedError } from "../errors";
 import { attachCookiesToResponse, isTokenValid } from "../utils/index.js";
 import { prismaClient } from "../db";
+import { Role } from "../types";
 
 // Middleware to authenticate a user
 export const authenticateUser = async (
@@ -45,13 +46,13 @@ export const authenticateUser = async (
 };
 
 // Middleware to authorize a user based on roles
-export const authorizePermissions = (...roles: string[]) => {
+export const authorizePermissions = (...roles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req?.user) {
       throw new UnauthorizedError("Unauthorized to access this route");
     }
-    if (!roles.includes(req?.user?.role)) {
-      throw new UnauthorizedError("Unauthorized to access this route");
+    if (!roles.includes(req?.user?.role as Role)) {
+      throw new ForbidenError("Unauthorized to access this route");
     }
     next();
   };

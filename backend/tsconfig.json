@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "strict": true,
+    "types": ["node"],
     "esModuleInterop": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
