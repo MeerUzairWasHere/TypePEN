@@ -15,6 +15,7 @@ import { openApiSpec } from "./openApiSpec";
 // Routers
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
+import companyRouter from "./routes/company.routes";
 
 // Middleware
 import notFoundMiddleware from "./middlewares/not-found";
@@ -49,6 +50,7 @@ app.use(cors());
 
 // Routes
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/users", userRouter);
 
 // Remove this in production
