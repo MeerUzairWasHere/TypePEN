@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError, UnauthorizedError } from "../errors";
+import { BadRequestError } from "../errors";
 import { z, ZodSchema } from "zod";
 import {
-  validateAddCompanyInput,
+  validateCompanyInput,
   validateForgotPasswordInput,
   validateLoginInput,
   validateRegisterInput,
@@ -67,6 +67,5 @@ export const validateUpdateUserInputMiddleware = withValidationErrors(
 export const validateLoginInputMiddleware =
   withValidationErrors(validateLoginInput);
 
-export const validateAddCompanyInputMiddleware = withValidationErrors(
-  validateAddCompanyInput
-);
+export const validateCompanyInputMiddleware =
+  withValidationErrors(validateCompanyInput);
