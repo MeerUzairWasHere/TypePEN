@@ -1,8 +1,12 @@
 export interface CompanyInfo {
+  id: string;
   name: string;
   email: string;
-  website?: string;
-  address?: string;
+  website: string;
+  address: string;
+  phone: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface EmailOptions {

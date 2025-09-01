@@ -15,10 +15,13 @@ import { openApiSpec } from "./openApiSpec";
 // Routers
 import authRouter from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
+import companyRouter from "./routes/company.routes";
 
 // Middleware
 import notFoundMiddleware from "./middlewares/not-found";
 import errorHandlerMiddleware from "./middlewares/error-handler";
+import { emailService } from "./services/email.service";
+import { companyService } from "./services/company.service";
 
 // const __dirname = dirname(fileURLToPath(import.meta.url)); // Uncomment if you have a frontend
 
@@ -49,14 +52,15 @@ app.use(cors());
 
 // Routes
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/users", userRouter);
 
 // Remove this in production
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
-app.get("*", (req, res) => {
-  res.redirect("/documentation"); // comment out this route when starting
-});
+// app.get("*", (req, res) => {
+//   // res.redirect("/documentation"); // comment out this route when starting
+// });
 
 // Serve static files in production
 // Uncomment the below line if you have a frontend to serve in production
@@ -75,6 +79,7 @@ const port = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     await prismaClient.$connect();
+    await emailService.loadCompany(companyService);
     app.listen(port, () => {
       console.log(`Server is listening on http://localhost:${port}/...`);
     });

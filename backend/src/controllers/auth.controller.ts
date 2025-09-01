@@ -18,7 +18,7 @@ export const registerUser = async (
 ) => {
   const result = await authService.registerUser(
     req.body,
-    req.get("origin") || ""
+    req.get("origin") || process.env.BASE_URL!
   );
 
   res.status(StatusCodes.CREATED).json(result);
@@ -78,7 +78,7 @@ export const forgotPassword = async (
 ) => {
   const result = await authService.forgotPassword(
     req.body,
-    req.get("origin") || ""
+    req.get("origin") || process.env.BASE_URL!
   );
 
   res.status(StatusCodes.OK).json(result);

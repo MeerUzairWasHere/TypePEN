@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError, UnauthorizedError } from "../errors";
+import { BadRequestError } from "../errors";
 import { z, ZodSchema } from "zod";
 import {
+  validateCompanyInput,
   validateForgotPasswordInput,
   validateLoginInput,
   validateRegisterInput,
@@ -11,22 +12,27 @@ import {
   validateVerifyEmailInput,
 } from "../types";
 
+const isEmpty = (obj: object): boolean => {
+  return Object.keys(obj).length === 0;
+};
+
 // Utility function to handle Zod validation errors
 const withValidationErrors =
   <T>(schema: ZodSchema<T>) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Parse and validate the request body with the provided schema
+      if (isEmpty(req.body)) {
+        throw new BadRequestError("Please provide a valid request body");
+      }
       await schema.parseAsync(req.body);
+
       next();
     } catch (err) {
-      if (err instanceof z.ZodError) {
-        const errorMessages = err.errors.map((error) => error.message);
-        const firstMessage = errorMessages[0];
+      if (err instanceof z.core.$ZodError) {
+        const errorMessages = err.issues.map(
+          (error: z.core.$ZodIssue) => error.message
+        );
 
-        if (firstMessage.startsWith("not authorized")) {
-          throw new UnauthorizedError("not authorized to access this route");
-        }
         throw new BadRequestError(errorMessages.join(", "));
       }
       next(err);
@@ -60,3 +66,6 @@ export const validateUpdateUserInputMiddleware = withValidationErrors(
 
 export const validateLoginInputMiddleware =
   withValidationErrors(validateLoginInput);
+
+export const validateCompanyInputMiddleware =
+  withValidationErrors(validateCompanyInput);

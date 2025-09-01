@@ -40,7 +40,6 @@ export class UnauthorizedError extends Error {
   }
 }
 
-
 export class ConflictError extends Error {
   public statusCode: number;
 
@@ -48,5 +47,25 @@ export class ConflictError extends Error {
     super(message);
     this.name = "ConflictError";
     this.statusCode = StatusCodes.CONFLICT;
+  }
+}
+
+export class ForbidenError extends Error {
+  public statusCode: number;
+
+  constructor(message: string) {
+    super(message);
+    this.name = "ForbidenError";
+    this.statusCode = StatusCodes.FORBIDDEN;
+  }
+}
+
+export class NoContent extends Error {
+  public statusCode: number;
+
+  constructor(message: string) {
+    super(message);
+    this.name = "NoContent";
+    this.statusCode = StatusCodes.NO_CONTENT;
   }
 }
