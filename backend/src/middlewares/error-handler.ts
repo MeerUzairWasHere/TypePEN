@@ -104,10 +104,10 @@ const errorHandlerMiddleware = (
     customError.statusCode = StatusCodes.TOO_MANY_REQUESTS;
   }
 
-  // // Log detailed errors in development mode
-  // if (process.env.NODE_ENV === "development") {
-  //   console.error("Error Stack:", err.stack);
-  // }
+  // Log detailed errors in development mode
+  if (process.env.NODE_ENV === "development") {
+    console.error("Error Stack:", err.stack);
+  }
 
   // Send the error response
   return res.status(customError.statusCode).json({ msg: customError.msg });
