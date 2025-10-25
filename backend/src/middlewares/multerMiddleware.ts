@@ -8,7 +8,6 @@ const upload = multer({ storage });
 
 const parser = new DataParser();
 
-// Define the file type
 interface UploadedFile {
   originalname: string;
   buffer: Buffer;

@@ -25,7 +25,7 @@ export const authenticateUser = async (
 
     const payload = isTokenValid(refreshToken);
 
-    const existingToken = await prismaService.client.token.findFirst({
+    const existingToken = await prismaService.token.findFirst({
       where: {
         userId: payload.user.userId,
         refreshToken: payload.refreshToken,
