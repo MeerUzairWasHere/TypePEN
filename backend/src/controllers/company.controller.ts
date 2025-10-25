@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { CompanyInput } from "../types";
-import { companyService } from "../services/company.service";
 import { StatusCodes } from "http-status-codes";
+import { companyService } from "../services/container";
 
 export const createCompany = async (
   req: Request<{}, {}, CompanyInput>,

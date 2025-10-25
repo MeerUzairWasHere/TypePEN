@@ -2,8 +2,8 @@ import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
-import { userService } from "../services/user.service";
 import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
+import { userService } from "../services/container";
 
 export const showCurrentUser = async (
   req: Request,

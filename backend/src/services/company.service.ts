@@ -1,17 +1,18 @@
-import { prismaClient } from "../db";
+import { PrismaClient } from "@prisma/client";
 import { ConflictError, NotFoundError } from "../errors";
 import { CompanyInput } from "../types";
 import { CompanyInfo } from "../types/email.types";
 
 export class CompanyService {
+  constructor(private prismaService: PrismaClient) {}
   async createCompany({ data }: { data: CompanyInput }) {
-    const companyAlreadyExists = await prismaClient.company.findFirst();
+    const companyAlreadyExists = await this.prismaService.company.findFirst();
 
     if (companyAlreadyExists) {
       throw new ConflictError("Company already exists");
     }
 
-    const company = await prismaClient.company.create({
+    const company = await this.prismaService.company.create({
       data,
     });
 
@@ -19,7 +20,7 @@ export class CompanyService {
   }
 
   async getCompany(): Promise<CompanyInfo> {
-    const company = await prismaClient.company.findFirst();
+    const company = await this.prismaService.company.findFirst();
 
     if (!company) {
       throw new NotFoundError(
@@ -39,7 +40,7 @@ export class CompanyService {
   }) {
     await this.getCompany();
 
-    const company = await prismaClient.company.update({
+    const company = await this.prismaService.company.update({
       data: data,
       where: {
         id: companyId,
@@ -50,9 +51,8 @@ export class CompanyService {
   }
 
   async deleteCompany() {
-    await prismaClient.company.deleteMany();
+    await this.prismaService.company.deleteMany();
     return;
   }
 }
 
-export const companyService = new CompanyService();

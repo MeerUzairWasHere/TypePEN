@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
-import { authService } from "../services/auth.service";
 import {
   ForgotPasswordInput,
   LoginInput,
@@ -11,6 +10,8 @@ import {
   TokenUser,
   VerifyEmailInput,
 } from "../types";
+
+import { authService } from "../services/container";
 
 export const registerUser = async (
   req: Request<{}, {}, RegisterInput>,

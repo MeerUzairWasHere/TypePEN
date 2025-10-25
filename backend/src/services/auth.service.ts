@@ -1,5 +1,5 @@
+// services/auth.service.ts
 import { randomBytes } from "crypto";
-import { prismaClient } from "../db";
 import {
   hashString,
   createTokenUser,
@@ -13,17 +13,22 @@ import {
   ResetPasswordInput,
   VerifyEmailInput,
 } from "../types";
-
 import { BadRequestError, UnauthenticatedError } from "../errors";
-import { emailService } from "./email.service";
+import { IEmailService } from "../types/email.types";
+import { PrismaClient } from "@prisma/client";
 
 export class AuthService {
+  constructor(
+    private emailService: IEmailService,
+    private prismaService: PrismaClient
+  ) {}
+
   // User Registration
   async registerUser(data: RegisterInput, origin: string) {
     const { email, name, password } = data;
 
     // Check if this is the first account to set role as admin
-    const userCount = await prismaClient.user.count();
+    const userCount = await this.prismaService.user.count();
     const role = userCount === 0 ? "admin" : "user";
 
     // Hash the password and generate a verification token
@@ -31,7 +36,7 @@ export class AuthService {
     const verificationToken = randomBytes(40).toString("hex");
 
     // Create a new user in the database
-    const user = await prismaClient.user.create({
+    const user = await this.prismaService.user.create({
       data: {
         name,
         email,
@@ -49,7 +54,7 @@ export class AuthService {
       },
     });
 
-    await emailService.sendVerificationEmail({
+    await this.emailService.sendVerificationEmail({
       name,
       email,
       verificationToken,
@@ -67,7 +72,7 @@ export class AuthService {
     const { email, password } = data;
 
     // Step 1: Find user by email
-    const user = await prismaClient.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({ where: { email } });
 
     if (!user) {
       throw new UnauthenticatedError("Invalid Credentials");
@@ -89,7 +94,7 @@ export class AuthService {
 
     // Step 5: Check for existing token or create a new one
     let refreshToken: string;
-    const existingToken = await prismaClient.token.findFirst({
+    const existingToken = await this.prismaService.token.findFirst({
       where: { user: { id: user.id } },
     });
 
@@ -100,7 +105,7 @@ export class AuthService {
       refreshToken = existingToken.refreshToken;
     } else {
       refreshToken = randomBytes(40).toString("hex");
-      await prismaClient.token.create({
+      await this.prismaService.token.create({
         data: {
           refreshToken,
           ip,
@@ -119,7 +124,7 @@ export class AuthService {
   // Verify Email
   async verifyEmail(data: VerifyEmailInput) {
     const { verificationToken, email } = data;
-    const user = await prismaClient.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({ where: { email } });
 
     if (!user) {
       throw new UnauthenticatedError("Verification Failed");
@@ -129,7 +134,7 @@ export class AuthService {
       throw new UnauthenticatedError("Verification Failed");
     }
 
-    await prismaClient.user.update({
+    await this.prismaService.user.update({
       where: { email },
       data: {
         isVerified: true,
@@ -138,7 +143,7 @@ export class AuthService {
       },
     });
 
-    await emailService.sendWelcomeEmail({
+    await this.emailService.sendWelcomeEmail({
       name: user.name,
       email: user.email,
     });
@@ -148,7 +153,7 @@ export class AuthService {
 
   // Logout
   async logout(userId: number) {
-    await prismaClient.token.deleteMany({
+    await this.prismaService.token.deleteMany({
       where: {
         userId: Number(userId),
       },
@@ -165,7 +170,7 @@ export class AuthService {
       throw new BadRequestError("Please provide a valid email");
     }
 
-    const user = await prismaClient.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({ where: { email } });
 
     if (!user) {
       return { msg: "User not found!" };
@@ -176,7 +181,7 @@ export class AuthService {
     const tenMinutes = 1000 * 60 * 10;
     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
 
-    await prismaClient.user.update({
+    await this.prismaService.user.update({
       where: { email },
       data: {
         passwordToken: hashString(passwordToken),
@@ -184,7 +189,7 @@ export class AuthService {
       },
     });
 
-    await emailService.sendResetPasswordEmail({
+    await this.emailService.sendResetPasswordEmail({
       name: user.name,
       email: user.email,
       token: passwordToken,
@@ -203,7 +208,7 @@ export class AuthService {
   async resetPassword(data: ResetPasswordInput) {
     const { token, email, newPassword } = data;
 
-    const user = await prismaClient.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({ where: { email } });
     if (!user) {
       throw new BadRequestError("Invalid or expired token");
     }
@@ -219,7 +224,7 @@ export class AuthService {
 
     const hashedPassword = await hashPassword(newPassword);
 
-    await prismaClient.user.update({
+    await this.prismaService.user.update({
       where: { email },
       data: {
         password: hashedPassword,
@@ -233,7 +238,7 @@ export class AuthService {
 
   // Get user by ID (optional utility method)
   async getUserById(userId: number) {
-    return await prismaClient.user.findUnique({
+    return await this.prismaService.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -249,12 +254,10 @@ export class AuthService {
 
   // Check if email exists (optional utility method)
   async checkEmailExists(email: string) {
-    const user = await prismaClient.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { email },
       select: { id: true },
     });
     return !!user;
   }
 }
-
-export const authService = new AuthService();

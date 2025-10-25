@@ -1,13 +1,13 @@
-import { User } from "@prisma/client";
-import { prismaClient } from "../db";
+import { PrismaClient, User } from "@prisma/client";
 import { createTokenUser, comparePassword, hashPassword } from "../utils";
 import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
 import { UnauthenticatedError } from "../errors";
 
 export class UserService {
+  constructor(private prismaService: PrismaClient) {}
   // Get current user
   async getCurrentUser(userId: number): Promise<TokenUser | null> {
-    const user = await prismaClient.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -30,7 +30,7 @@ export class UserService {
 
     // Check if email is already taken by another user
     if (email) {
-      const existingUser = await prismaClient.user.findFirst({
+      const existingUser = await this.prismaService.user.findFirst({
         where: {
           email,
           id: { not: userId },
@@ -43,7 +43,7 @@ export class UserService {
     }
 
     // Update the user with Prisma
-    const user = await prismaClient.user.update({
+    const user = await this.prismaService.user.update({
       where: { id: userId },
       data: { email, name },
       select: {
@@ -64,7 +64,7 @@ export class UserService {
   ): Promise<{ msg: string }> {
     const { oldPassword, newPassword } = data;
 
-    const user = await prismaClient.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
 
@@ -89,7 +89,7 @@ export class UserService {
     const hashedNewPassword = await hashPassword(newPassword);
 
     // Update the password with Prisma
-    await prismaClient.user.update({
+    await this.prismaService.user.update({
       where: { id: userId },
       data: { password: hashedNewPassword },
     });
@@ -99,7 +99,7 @@ export class UserService {
 
   // Delete user account (optional utility method)
   async deleteUser(userId: number): Promise<{ msg: string }> {
-    await prismaClient.user.delete({
+    await this.prismaService.user.delete({
       where: { id: userId },
     });
 
@@ -108,7 +108,7 @@ export class UserService {
 
   // Utility method to get user profile
   async getUserProfile(userId: number) {
-    return await prismaClient.user.findUnique({
+    return await this.prismaService.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -122,5 +122,3 @@ export class UserService {
     });
   }
 }
-
-export const userService = new UserService();

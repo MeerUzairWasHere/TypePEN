@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
 import cors from "cors";
-import { prismaClient } from "./db";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import swaggerUi from "swagger-ui-express";
@@ -20,8 +19,11 @@ import companyRouter from "./routes/company.routes";
 // Middleware
 import notFoundMiddleware from "./middlewares/not-found";
 import errorHandlerMiddleware from "./middlewares/error-handler";
-import { emailService } from "./services/email.service";
-import { companyService } from "./services/company.service";
+import {
+  companyService,
+  emailService,
+  prismaService,
+} from "./services/container";
 
 // const __dirname = dirname(fileURLToPath(import.meta.url)); // Uncomment if you have a frontend
 
@@ -78,7 +80,7 @@ const port = process.env.PORT || 3000;
 // Start the server
 const startServer = async () => {
   try {
-    await prismaClient.$connect();
+    await prismaService.connect();
     await emailService.loadCompany(companyService);
     app.listen(port, () => {
       console.log(`Server is listening on http://localhost:${port}/...`);

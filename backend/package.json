@@ -1,6 +1,6 @@
 {
   "name": "type-pen",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,9 @@
     "generate": "npx prisma generate",
     "build": "npm i && tsc -b",
     "setup": "npm i",
-    "db": "docker-compose up -d"
+    "db": "docker rm -f typepen-postgres || true && docker-compose up -d",
+    "db:clean": "docker rm -f typepen-postgres && docker-compose up -d",
+    "db:reset": "docker-compose down && docker-compose up -d"
   },
   "repository": {
     "type": "git",

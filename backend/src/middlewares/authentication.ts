@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { ForbidenError, UnauthenticatedError, UnauthorizedError } from "../errors";
+import {
+  ForbidenError,
+  UnauthenticatedError,
+  UnauthorizedError,
+} from "../errors";
 import { attachCookiesToResponse, isTokenValid } from "../utils/index.js";
-import { prismaClient } from "../db";
 import { Role } from "../types";
+import { prismaService } from "../services/container";
 
 // Middleware to authenticate a user
 export const authenticateUser = async (
@@ -21,7 +25,7 @@ export const authenticateUser = async (
 
     const payload = isTokenValid(refreshToken);
 
-    const existingToken = await prismaClient.token.findFirst({
+    const existingToken = await prismaService.client.token.findFirst({
       where: {
         userId: payload.user.userId,
         refreshToken: payload.refreshToken,

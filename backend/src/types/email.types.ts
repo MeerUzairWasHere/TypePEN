@@ -1,3 +1,5 @@
+import { CompanyService } from "../services/company.service";
+
 export interface CompanyInfo {
   id: string;
   name: string;
@@ -46,3 +48,11 @@ export type EmailJobData =
   | { type: EmailType.VERIFICATION; payload: VerificationEmailParams }
   | { type: EmailType.RESET_PASSWORD; payload: ResetPasswordEmailParams }
   | { type: EmailType.WELCOME; payload: WelcomeEmailParams };
+
+// types/email.types.ts
+export interface IEmailService {
+  loadCompany(companyService: CompanyService): Promise<void>;
+  sendResetPasswordEmail(params: ResetPasswordEmailParams): Promise<void>;
+  sendVerificationEmail(params: VerificationEmailParams): Promise<void>;
+  sendWelcomeEmail(params: WelcomeEmailParams): Promise<void>;
+}
