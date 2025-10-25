@@ -2,10 +2,11 @@ import { PrismaClient, User } from "@prisma/client";
 import { createTokenUser, comparePassword, hashPassword } from "../utils";
 import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
 import { UnauthenticatedError } from "../errors";
+import { IUserService } from "../types/interfaces";
 
-export class UserService {
+export class UserService implements IUserService {
   constructor(private prismaService: PrismaClient) {}
-  // Get current user
+  
   async getCurrentUser(userId: number): Promise<TokenUser | null> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
@@ -24,11 +25,11 @@ export class UserService {
     return createTokenUser(user as User);
   }
 
-  // Update user information
+  
   async updateUser(userId: number, data: UpdateUserInput): Promise<TokenUser> {
     const { email, name } = data;
 
-    // Check if email is already taken by another user
+    
     if (email) {
       const existingUser = await this.prismaService.user.findFirst({
         where: {
@@ -42,7 +43,7 @@ export class UserService {
       }
     }
 
-    // Update the user with Prisma
+    
     const user = await this.prismaService.user.update({
       where: { id: userId },
       data: { email, name },
@@ -57,7 +58,7 @@ export class UserService {
     return createTokenUser(user as User);
   }
 
-  // Update user password
+  
   async updateUserPassword(
     userId: number,
     data: UpdatePasswordInput
@@ -72,23 +73,23 @@ export class UserService {
       throw new UnauthenticatedError("User not found");
     }
 
-    // Check if the old password is correct
+    
     const isPasswordCorrect = await comparePassword(oldPassword, user.password);
     if (!isPasswordCorrect) {
       throw new UnauthenticatedError("Invalid Credentials");
     }
 
-    // Validate that new password is different from old password
+    
     if (oldPassword === newPassword) {
       throw new UnauthenticatedError(
         "New password must be different from old password"
       );
     }
 
-    // Hash the new password
+    
     const hashedNewPassword = await hashPassword(newPassword);
 
-    // Update the password with Prisma
+    
     await this.prismaService.user.update({
       where: { id: userId },
       data: { password: hashedNewPassword },
@@ -97,7 +98,7 @@ export class UserService {
     return { msg: "Success! Password Updated." };
   }
 
-  // Delete user account (optional utility method)
+  
   async deleteUser(userId: number): Promise<{ msg: string }> {
     await this.prismaService.user.delete({
       where: { id: userId },
@@ -106,7 +107,7 @@ export class UserService {
     return { msg: "User account deleted successfully" };
   }
 
-  // Utility method to get user profile
+  
   async getUserProfile(userId: number) {
     return await this.prismaService.user.findUnique({
       where: { id: userId },

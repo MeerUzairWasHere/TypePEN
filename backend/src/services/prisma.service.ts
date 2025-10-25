@@ -1,23 +1,22 @@
 import { PrismaClient } from "@prisma/client";
+import { IPrismaService } from "../types/interfaces";
 
-export class PrismaService {
-  public readonly client: PrismaClient;
-
+export class PrismaService extends PrismaClient implements IPrismaService {
   constructor() {
-    this.client = new PrismaClient();
+    super();
   }
 
   async connect(): Promise<void> {
-    await this.client.$connect();
+    await this.$connect();
   }
 
   async disconnect(): Promise<void> {
-    await this.client.$disconnect();
+    await this.$disconnect();
   }
 
   async healthCheck(): Promise<boolean> {
     try {
-      await this.client.$queryRaw`SELECT 1`;
+      await this.$queryRaw`SELECT 1`;
       return true;
     } catch {
       return false;

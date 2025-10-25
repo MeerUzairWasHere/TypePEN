@@ -1,4 +1,3 @@
-// services/container.ts
 import { EmailService } from "./email.service";
 import { AuthService } from "./auth.service";
 import { CompanyService } from "./company.service";
@@ -16,15 +15,11 @@ export class ServiceContainer {
   public readonly userService: UserService;
 
   private constructor() {
-    // Create services in the correct order
     this.prismaService = new PrismaService();
-    this.companyService = new CompanyService(this.prismaService.client);
+    this.companyService = new CompanyService(this.prismaService);
     this.emailService = new EmailService(nodemailerConfig, this.companyService);
-    this.userService = new UserService(this.prismaService.client);
-    this.authService = new AuthService(
-      this.emailService,
-      this.prismaService.client
-    );
+    this.userService = new UserService(this.prismaService);
+    this.authService = new AuthService(this.emailService, this.prismaService);
   }
 
   public static getInstance(): ServiceContainer {
@@ -34,13 +29,11 @@ export class ServiceContainer {
     return ServiceContainer.instance;
   }
 
-  // For testing - allow resetting the container
   public static resetInstance(): void {
     ServiceContainer.instance = new ServiceContainer();
   }
 }
 
-// Export individual services for convenience
 export const {
   companyService,
   emailService,

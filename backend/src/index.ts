@@ -1,14 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 import "express-async-errors";
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
 import cors from "cors";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
 import swaggerUi from "swagger-ui-express";
 import { openApiSpec } from "./openApiSpec";
 // Routers
@@ -87,6 +85,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error(error);
+    await prismaService.disconnect();
   }
 };
 

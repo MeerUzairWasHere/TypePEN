@@ -2,8 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import { ConflictError, NotFoundError } from "../errors";
 import { CompanyInput } from "../types";
 import { CompanyInfo } from "../types/email.types";
+import { ICompanyService } from "../types/interfaces";
 
-export class CompanyService {
+export class CompanyService implements ICompanyService {
   constructor(private prismaService: PrismaClient) {}
   async createCompany({ data }: { data: CompanyInput }) {
     const companyAlreadyExists = await this.prismaService.company.findFirst();
@@ -55,4 +56,3 @@ export class CompanyService {
     return;
   }
 }
-

@@ -1,4 +1,3 @@
-// services/email.service.ts
 import { createTransport } from "nodemailer";
 import {
   CompanyInfo,
@@ -6,24 +5,22 @@ import {
   ResetPasswordEmailParams,
   VerificationEmailParams,
   WelcomeEmailParams,
-  IEmailService,
 } from "../types/email.types";
-import { CompanyService } from "./company.service";
+import { ICompanyService, IEmailService } from "../types/interfaces";
 
 export class EmailService implements IEmailService {
   private transporter: any;
   private company: CompanyInfo | null = null;
 
-  constructor(nodemailerConfig: any, private companyService?: CompanyService) {
+  constructor(nodemailerConfig: any, private companyService?: ICompanyService) {
     this.transporter = createTransport(nodemailerConfig);
 
-    // Auto-load company if provided
+    
     if (companyService) {
       this.loadCompany(companyService);
     }
   }
-
-  public async loadCompany(companyService: CompanyService): Promise<void> {
+  public async loadCompany(companyService: ICompanyService): Promise<void> {
     this.company = await companyService.getCompany();
   }
 
