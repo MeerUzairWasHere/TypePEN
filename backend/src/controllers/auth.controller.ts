@@ -11,84 +11,88 @@ import {
   VerifyEmailInput,
 } from "../types";
 
-import { authService } from "../services/container";
+import { AuthService } from "../services/auth.service";
 
-export const registerUser = async (
-  req: Request<{}, {}, RegisterInput>,
-  res: Response
-) => {
-  const result = await authService.registerUser(
-    req.body,
-    req.get("origin") || process.env.BASE_URL!
-  );
+export class AuthController {
+  constructor(private authService: AuthService) {}
 
-  res.status(StatusCodes.CREATED).json(result);
-};
+  registerUser = async (
+    req: Request<{}, {}, RegisterInput>,
+    res: Response
+  ): Promise<void> => {
+    const result = await this.authService.registerUser(
+      req.body,
+      req.get("origin") || process.env.BASE_URL!
+    );
 
-export const login = async (
-  req: Request<{}, {}, LoginInput>,
-  res: Response<{ user: TokenUser }>
-) => {
-  const userAgent = req.headers["user-agent"] || "unknown";
-  const ip = req.ip;
+    res.status(StatusCodes.CREATED).json(result);
+  };
 
-  if (!ip) {
-    throw new BadRequestError("IP address is required");
-  }
+  login = async (
+    req: Request<{}, {}, LoginInput>,
+    res: Response<{ user: TokenUser }>
+  ): Promise<void> => {
+    const userAgent = req.headers["user-agent"] || "unknown";
+    const ip = req.ip;
 
-  const { user, refreshToken } = await authService.login(
-    req.body,
-    userAgent,
-    ip
-  );
+    if (!ip) {
+      throw new BadRequestError("IP address is required");
+    }
 
-  attachCookiesToResponse({ res, user, refreshToken });
+    const { user, refreshToken } = await this.authService.login(
+      req.body,
+      userAgent,
+      ip
+    );
 
-  res.status(StatusCodes.OK).json({ user });
-};
+    attachCookiesToResponse({ res, user, refreshToken });
 
-export const verifyEmail = async (
-  req: Request<{}, {}, VerifyEmailInput>,
-  res: Response
-) => {
-  const result = await authService.verifyEmail(req.body);
-  res.status(StatusCodes.OK).json(result);
-};
+    res.status(StatusCodes.OK).json({ user });
+  };
 
-export const logout = async (req: Request, res: Response) => {
-  if (!req.user?.userId) {
-    throw new BadRequestError("User ID is required");
-  }
+  verifyEmail = async (
+    req: Request<{}, {}, VerifyEmailInput>,
+    res: Response
+  ): Promise<void> => {
+    const result = await this.authService.verifyEmail(req.body);
+    res.status(StatusCodes.OK).json(result);
+  };
 
-  const result = await authService.logout(Number(req.user.userId));
+  logout = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user?.userId) {
+      throw new BadRequestError("User ID is required");
+    }
 
-  res.cookie("accessToken", "logout", {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
-  res.cookie("refreshToken", "logout", {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
-  res.status(StatusCodes.OK).json(result);
-};
+    const result = await this.authService.logout(Number(req.user.userId));
 
-export const forgotPassword = async (
-  req: Request<{}, {}, ForgotPasswordInput>,
-  res: Response
-) => {
-  const result = await authService.forgotPassword(
-    req.body,
-    req.get("origin") || process.env.BASE_URL!
-  );
+    res.cookie("accessToken", "logout", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+    res.cookie("refreshToken", "logout", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+    res.status(StatusCodes.OK).json(result);
+  };
 
-  res.status(StatusCodes.OK).json(result);
-};
+  forgotPassword = async (
+    req: Request<{}, {}, ForgotPasswordInput>,
+    res: Response
+  ): Promise<void> => {
+    const result = await this.authService.forgotPassword(
+      req.body,
+      req.get("origin") || process.env.BASE_URL!
+    );
 
-export const resetPassword = async (
-  req: Request<{}, {}, ResetPasswordInput>,
-  res: Response
-) => {
-  const result = await authService.resetPassword(req.body);
-  res.status(StatusCodes.OK).json(result);
-};
+    res.status(StatusCodes.OK).json(result);
+  };
+
+  resetPassword = async (
+    req: Request<{}, {}, ResetPasswordInput>,
+    res: Response
+  ): Promise<void> => {
+    const result = await this.authService.resetPassword(req.body);
+    res.status(StatusCodes.OK).json(result);
+  };
+}

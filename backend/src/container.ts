@@ -1,0 +1,79 @@
+import { nodemailerConfig } from "./configs/nodemailer";
+import { AuthController } from "./controllers/auth.controller";
+import { CompanyRepository, UserRepository } from "./repositories";
+import { AuthRoutes } from "./routes/auth.routes";
+import {
+  AuthService,
+  CompanyService,
+  EmailService,
+  PrismaService,
+  UserService,
+} from "./services";
+
+// Container to hold all instances
+class Container {
+  // Database
+  public prismaService: PrismaService;
+
+  // Repositories
+  public userRepository: UserRepository;
+  public companyRepository: CompanyRepository;
+
+  // Services
+  public emailService: EmailService;
+  public authService: AuthService;
+  public userService: UserService;
+  public companyService: CompanyService;
+
+  // Controllers
+  public authController: AuthController;
+  // public userController: UserController;
+  // public companyController: CompanyController;
+
+  // Routes
+  public authRoutes: AuthRoutes;
+
+  constructor() {
+    // Initialize Database
+    this.prismaService = new PrismaService();
+
+    // Initialize Repositories
+    this.userRepository = new UserRepository(this.prismaService);
+    this.companyRepository = new CompanyRepository(this.prismaService);
+
+    // Initialize Services
+    this.companyService = new CompanyService(this.companyRepository);
+    this.emailService = new EmailService(nodemailerConfig, this.companyService);
+    this.authService = new AuthService(this.emailService, this.userRepository);
+    this.userService = new UserService(this.userRepository);
+
+    // Initialize Controllers
+    this.authController = new AuthController(this.authService);
+    // this.userController = new UserController(this.userService);
+    // this.companyController = new CompanyController(this.companyService);
+
+    // Initialize Routes
+    this.authRoutes = new AuthRoutes(this.authController);
+  }
+}
+
+// Export singleton instance
+export const container = new Container();
+
+// Export individual instances for convenience
+export const {
+  prismaService,
+  userRepository,
+  companyRepository,
+  emailService,
+  authService,
+  userService,
+  companyService,
+  // Controllers
+  authController,
+  // userController,
+  // companyController,
+
+  // Routes
+  authRoutes,
+} = container;

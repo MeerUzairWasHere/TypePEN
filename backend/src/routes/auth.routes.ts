@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { Request, Response, NextFunction } from "express";
+import { AuthController } from "../controllers/auth.controller";
 import { authenticateUser } from "../middlewares/authentication";
-
 import {
   validateForgotPasswordInputMiddleware,
   validateLoginInputMiddleware,
@@ -10,35 +9,47 @@ import {
   validateVerifyEmailInputMiddleware,
 } from "../middlewares/validationMiddleware";
 
-import {
-  registerUser,
-  login,
-  logout,
-  verifyEmail,
-  forgotPassword,
-  resetPassword,
-} from "../controllers/auth.controller";
+export class AuthRoutes {
+  public router: Router;
 
-const router = Router();
+  constructor(private authController: AuthController) {
+    this.router = Router();
+    this.initializeRoutes();
+  }
 
-router.post("/register", validateRegisterInputMiddleware, registerUser);
+  private initializeRoutes(): void {
+    // Public routes
+    this.router.post(
+      "/register",
+      validateRegisterInputMiddleware,
+      this.authController.registerUser
+    );
 
-router.post("/login", validateLoginInputMiddleware, login);
+    this.router.post(
+      "/login",
+      validateLoginInputMiddleware,
+      this.authController.login
+    );
 
-router.delete("/logout", authenticateUser, logout);
+    this.router.post(
+      "/verify-email",
+      validateVerifyEmailInputMiddleware,
+      this.authController.verifyEmail
+    );
 
-router.post("/verify-email", validateVerifyEmailInputMiddleware, verifyEmail);
+    this.router.post(
+      "/forgot-password",
+      validateForgotPasswordInputMiddleware,
+      this.authController.forgotPassword
+    );
 
-router.post(
-  "/forgot-password",
-  validateForgotPasswordInputMiddleware,
-  forgotPassword
-);
+    this.router.post(
+      "/reset-password",
+      validateResetPasswordInputMiddleware,
+      this.authController.resetPassword
+    );
 
-router.post(
-  "/reset-password",
-  validateResetPasswordInputMiddleware,
-  resetPassword
-);
-
-export default router;
+    // Protected routes
+    this.router.delete("/logout",  this.authController.logout);
+  }
+}

@@ -6,7 +6,7 @@ import {
 } from "../errors";
 import { attachCookiesToResponse, isTokenValid } from "../utils/index.js";
 import { Role } from "../types";
-import { prismaService } from "../services/container";
+import { prismaService } from "../container";
 
 // Middleware to authenticate a user
 export const authenticateUser = async (

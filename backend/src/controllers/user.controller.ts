@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
 import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
-import { userService } from "../services/container";
+import { userService } from "../container";
 
 export const showCurrentUser = async (
   req: Request,

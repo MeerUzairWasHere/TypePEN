@@ -1,27 +1,26 @@
-import { PrismaClient } from "@prisma/client";
 import { ConflictError, NotFoundError } from "../errors";
 import { CompanyInput } from "../types";
 import { CompanyInfo } from "../types/email.types";
 import { ICompanyService } from "../types/interfaces";
+import { CompanyRepository } from "../repositories/company.repository";
 
 export class CompanyService implements ICompanyService {
-  constructor(private prismaService: PrismaClient) {}
+  constructor(private companyRepository: CompanyRepository) {}
+
   async createCompany({ data }: { data: CompanyInput }) {
-    const companyAlreadyExists = await this.prismaService.company.findFirst();
+    const companyAlreadyExists = await this.companyRepository.findFirst();
 
     if (companyAlreadyExists) {
       throw new ConflictError("Company already exists");
     }
 
-    const company = await this.prismaService.company.create({
-      data,
-    });
+    const company = await this.companyRepository.create(data);
 
     return company;
   }
 
   async getCompany(): Promise<CompanyInfo> {
-    const company = await this.prismaService.company.findFirst();
+    const company = await this.companyRepository.findFirst();
 
     if (!company) {
       throw new NotFoundError(
@@ -41,18 +40,13 @@ export class CompanyService implements ICompanyService {
   }) {
     await this.getCompany();
 
-    const company = await this.prismaService.company.update({
-      data: data,
-      where: {
-        id: companyId,
-      },
-    });
+    const company = await this.companyRepository.update(companyId, data);
 
     return company;
   }
 
   async deleteCompany() {
-    await this.prismaService.company.deleteMany();
+    await this.companyRepository.deleteAll();
     return;
   }
 }

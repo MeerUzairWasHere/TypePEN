@@ -12,6 +12,13 @@ import {
   VerificationEmailParams,
   WelcomeEmailParams,
 } from "./email.types";
+import {
+  ForgotPasswordInput,
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+  VerifyEmailInput,
+} from "../types";
 
 export interface IEmailService {
   loadCompany(companyService: CompanyService): Promise<void>;
@@ -53,4 +60,41 @@ export interface IUserService {
     createdAt: Date;
     updatedAt: Date;
   } | null>;
+}
+
+export interface IAuthService {
+  registerUser(
+    data: RegisterInput,
+    origin: string
+  ): Promise<{
+    user: any;
+    msg: string;
+  }>;
+
+  login(
+    data: LoginInput,
+    userAgent: string,
+    ip: string
+  ): Promise<{
+    user: any;
+    refreshToken: string;
+  }>;
+
+  verifyEmail(data: VerifyEmailInput): Promise<{ msg: string }>;
+
+  logout(userId: number): Promise<{ msg: string }>;
+
+  forgotPassword(
+    data: ForgotPasswordInput,
+    origin: string
+  ): Promise<
+    | { msg: string }
+    | { name: string; email: string; token: string; origin: string }
+  >;
+
+  resetPassword(data: ResetPasswordInput): Promise<{ msg: string }>;
+
+  getUserById(userId: number): Promise<any | null>;
+
+  checkEmailExists(email: string): Promise<boolean>;
 }
