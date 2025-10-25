@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/auth.controller";
 import { authenticateUser } from "../middlewares/authentication";
+
 import {
   validateForgotPasswordInputMiddleware,
   validateLoginInputMiddleware,
@@ -9,47 +9,36 @@ import {
   validateVerifyEmailInputMiddleware,
 } from "../middlewares/validationMiddleware";
 
-export class AuthRoutes {
-  public router: Router;
+import { authController } from "../container";
 
-  constructor(private authController: AuthController) {
-    this.router = Router();
-    this.initializeRoutes();
-  }
+const router = Router();
 
-  private initializeRoutes(): void {
-    // Public routes
-    this.router.post(
-      "/register",
-      validateRegisterInputMiddleware,
-      this.authController.registerUser
-    );
+router.post(
+  "/register",
+  validateRegisterInputMiddleware,
+  authController.registerUser
+);
 
-    this.router.post(
-      "/login",
-      validateLoginInputMiddleware,
-      this.authController.login
-    );
+router.post("/login", validateLoginInputMiddleware, authController.login);
 
-    this.router.post(
-      "/verify-email",
-      validateVerifyEmailInputMiddleware,
-      this.authController.verifyEmail
-    );
+router.delete("/logout", authenticateUser, authController.logout);
 
-    this.router.post(
-      "/forgot-password",
-      validateForgotPasswordInputMiddleware,
-      this.authController.forgotPassword
-    );
+router.post(
+  "/verify-email",
+  validateVerifyEmailInputMiddleware,
+  authController.verifyEmail
+);
 
-    this.router.post(
-      "/reset-password",
-      validateResetPasswordInputMiddleware,
-      this.authController.resetPassword
-    );
+router.post(
+  "/forgot-password",
+  validateForgotPasswordInputMiddleware,
+  authController.forgotPassword
+);
 
-    // Protected routes
-    this.router.delete("/logout",  this.authController.logout);
-  }
-}
+router.post(
+  "/reset-password",
+  validateResetPasswordInputMiddleware,
+  authController.resetPassword
+);
+
+export default router;

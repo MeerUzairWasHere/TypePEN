@@ -10,18 +10,14 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { openApiSpec } from "./openApiSpec";
 // Routers
+import authRoutes from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import companyRouter from "./routes/company.routes";
 
 // Middleware
 import notFoundMiddleware from "./middlewares/not-found";
 import errorHandlerMiddleware from "./middlewares/error-handler";
-import {
-  authRoutes,
-  companyService,
-  emailService,
-  prismaService,
-} from "./container";
+import { companyService, emailService, prismaService } from "./container";
 
 // const __dirname = dirname(fileURLToPath(import.meta.url)); // Uncomment if you have a frontend
 
@@ -51,7 +47,7 @@ app.use(helmet());
 app.use(cors());
 
 // Routes
-app.use("/api/v1/auth", authRoutes.router);
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/users", userRouter);
 
