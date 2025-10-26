@@ -1,4 +1,3 @@
-import "module-alias/register";
 import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
@@ -9,15 +8,23 @@ import rateLimiter from "express-rate-limit";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import { openApiSpec } from "./openApiSpec";
+
 // Routers
 import authRoutes from "./routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import companyRouter from "./routes/company.routes";
 
 // Middleware
-import notFoundMiddleware from "./middlewares/not-found-middleware";
-import errorHandlerMiddleware from "./middlewares/error-handler-middleware";
 import { prismaService } from "./container";
+
+import {
+  httpExceptionFilter,
+  jwtExceptionFilter,
+  notFoundFilter,
+  prismaExceptionFilter,
+  rateLimitExceptionFilter,
+  zodExceptionFilter,
+} from "./filters";
 
 // const __dirname = dirname(fileURLToPath(import.meta.url)); // Uncomment if you have a frontend
 
@@ -40,7 +47,7 @@ app.set("trust proxy", 1);
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
-    max: 60,
+    max: 100,
   })
 );
 app.use(helmet());
@@ -64,10 +71,12 @@ app.use("/documentation", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 //     res.sendFile(resolve(__dirname, "./client/dist", "index.html"));
 // });
 
-// Error handling
-app.use(notFoundMiddleware);
-app.use(errorHandlerMiddleware);
-
+app.use(notFoundFilter); // 404 errors
+app.use(zodExceptionFilter); // Zod validation errors
+app.use(jwtExceptionFilter); // JWT token errors
+app.use(prismaExceptionFilter); // Prisma database errors
+app.use(rateLimitExceptionFilter); // Rate limiting errors
+app.use(httpExceptionFilter); // HTTP errors
 // Port
 const port = process.env.PORT || 3000;
 
