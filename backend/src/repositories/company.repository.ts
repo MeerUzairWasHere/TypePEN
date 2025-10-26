@@ -2,7 +2,7 @@ import { Company } from "@prisma/client";
 import { IPrismaService } from "../types/interfaces";
 import { CompanyInput } from "../types";
 
-export class CompanyRepository  {
+export class CompanyRepository {
   constructor(private prismaService: IPrismaService) {}
 
   async findFirst(): Promise<Company | null> {

@@ -9,11 +9,11 @@ export const showCurrentUser = async (
   req: Request,
   res: Response<{ user: TokenUser | null }>
 ) => {
-  if (!req.user?.userId) {
+  if (!req.user?.id) {
     throw new UnauthenticatedError("User not authenticated");
   }
 
-  const user = await userService.getCurrentUser(Number(req.user.userId));
+  const user = await userService.getCurrentUser(req.user);
   res.status(StatusCodes.OK).json({ user });
 };
 
@@ -21,14 +21,11 @@ export const updateUser = async (
   req: Request<{}, {}, UpdateUserInput>,
   res: Response<{ user: TokenUser }>
 ) => {
-  if (!req.user?.userId) {
+  if (!req.user?.id) {
     throw new UnauthenticatedError("User not authenticated");
   }
 
-  const tokenUser = await userService.updateUser(
-    Number(req.user.userId),
-    req.body
-  );
+  const tokenUser = await userService.updateUser(req.user.id, req.body);
 
   // Refresh the cookies with updated user info
   attachCookiesToResponse({ res, user: tokenUser, refreshToken: "" });
@@ -40,14 +37,11 @@ export const updateUserPassword = async (
   req: Request<{}, {}, UpdatePasswordInput>,
   res: Response<{ msg: string }>
 ) => {
-  if (!req.user?.userId) {
+  if (!req.user?.id) {
     throw new UnauthenticatedError("User not authenticated");
   }
 
-  const result = await userService.updateUserPassword(
-    Number(req.user.userId),
-    req.body
-  );
+  const result = await userService.updateUserPassword(req.user.id, req.body);
 
   res.status(StatusCodes.OK).json(result);
 };

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../errors";
-import { z, ZodSchema } from "zod";
+import { z, ZodType } from "zod";
 import {
   validateCompanyInput,
   validateForgotPasswordInput,
@@ -18,7 +18,7 @@ const isEmpty = (obj: object): boolean => {
 
 // Utility function to handle Zod validation errors
 const withValidationErrors =
-  <T>(schema: ZodSchema<T>) =>
+  <T>(schema: ZodType<T>) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (isEmpty(req.body)) {

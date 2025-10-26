@@ -1,29 +1,29 @@
 import { z } from "zod";
 
 export interface TokenUser {
+  id: string;
   name: string;
-  userId: number;
   role: string;
+  email: string;
 }
 
-export enum Role {
-  USER = "user",
-  ADMIN = "admin",
-}
-
-// Updated Zod schemas for each validation set
 export const validateRegisterInput = z.object({
   name: z
-    .string()
+    .string("name is required")
     .min(1, { message: "Name is required" })
     .min(2, { message: "Name must be at least 2 characters long" }),
+  username: z
+    .string("username is required")
+    .min(1, { message: "Name is required" })
+    .min(4, { message: "Name must be at least 2 characters long" })
+    .max(20, { message: "Name must be at most 20 characters long" }),
 
   email: z
     .email({ message: "Invalid email format" })
     .min(1, { message: "Email is required" }),
 
   password: z
-    .string()
+    .string("password is required")
     .min(1, { message: "Password is required" })
     .min(8, { message: "Password must be at least 8 characters long" })
     .max(20, { message: "Password must be at most 20 characters long" }),
@@ -125,4 +125,3 @@ export const validateCompanyInput = z.object({
 });
 
 export type CompanyInput = z.infer<typeof validateCompanyInput>;
-

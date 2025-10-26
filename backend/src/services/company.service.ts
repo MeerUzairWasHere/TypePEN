@@ -1,8 +1,8 @@
-import { ConflictError, NotFoundError } from "../errors";
+import { ConflictError } from "../errors";
 import { CompanyInput } from "../types";
-import { CompanyInfo } from "../types/email.types";
 import { ICompanyService } from "../types/interfaces";
 import { CompanyRepository } from "../repositories/company.repository";
+import { Company } from "@prisma/client";
 
 export class CompanyService implements ICompanyService {
   constructor(private companyRepository: CompanyRepository) {}
@@ -19,14 +19,8 @@ export class CompanyService implements ICompanyService {
     return company;
   }
 
-  async getCompany(): Promise<CompanyInfo> {
+  async getCompany(): Promise<Company | null> {
     const company = await this.companyRepository.findFirst();
-
-    if (!company) {
-      throw new NotFoundError(
-        `Company does not exist, Please create a new one.`
-      );
-    }
 
     return company;
   }

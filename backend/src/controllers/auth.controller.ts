@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError } from "../errors";
+import { BadRequestError, UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
 import {
   ForgotPasswordInput,
@@ -59,11 +59,11 @@ export class AuthController {
   };
 
   logout = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user?.userId) {
-      throw new BadRequestError("User ID is required");
+    if (!req.user?.id) {
+      throw new UnauthenticatedError("User not authenticated");
     }
 
-    const result = await this.authService.logout(Number(req.user.userId));
+    const result = await this.authService.logout(req.user);
 
     res.cookie("accessToken", "logout", {
       httpOnly: true,

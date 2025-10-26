@@ -10,6 +10,7 @@ import {
   LoginInput,
   RegisterInput,
   ResetPasswordInput,
+  TokenUser,
   VerifyEmailInput,
 } from "../types";
 import { BadRequestError, UnauthenticatedError } from "../errors";
@@ -23,17 +24,18 @@ export class AuthService implements IAuthService {
   ) {}
 
   async registerUser(data: RegisterInput, origin: string) {
-    const { email, name, password } = data;
+    const { email, name, password, username } = data;
 
     const userCount = await this.userRepository.getUserCount();
-    const role = userCount === 0 ? "admin" : "user";
+    const role = userCount === 0 ? "Admin" : "User";
 
     const hashedPassword = await hashPassword(password);
     const verificationToken = randomBytes(40).toString("hex");
 
-    const user = await this.userRepository.createUser({
+    await this.userRepository.createUser({
       name,
       email,
+      username,
       password: hashedPassword,
       role,
       verificationToken,
@@ -47,7 +49,6 @@ export class AuthService implements IAuthService {
     });
 
     return {
-      user,
       msg: "User created successfully",
     };
   }
@@ -122,8 +123,8 @@ export class AuthService implements IAuthService {
     return { msg: "Email Verified" };
   }
 
-  async logout(userId: number) {
-    await this.userRepository.deleteUserTokens(userId);
+  async logout(tokenUser: TokenUser) {
+    await this.userRepository.deleteUserTokens(tokenUser.id);
 
     return { msg: "User logged out!" };
   }
@@ -192,13 +193,5 @@ export class AuthService implements IAuthService {
     });
 
     return { msg: "Password reset successfully!" };
-  }
-
-  async getUserById(userId: number) {
-    return await this.userRepository.findById(userId);
-  }
-
-  async checkEmailExists(email: string) {
-    return await this.userRepository.checkEmailExists(email);
   }
 }

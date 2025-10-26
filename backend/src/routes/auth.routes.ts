@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateUser } from "../middlewares/authentication";
+import { authenticateUser } from "../middlewares/authentication-middleware";
 
 import {
   validateForgotPasswordInputMiddleware,
@@ -7,7 +7,7 @@ import {
   validateRegisterInputMiddleware,
   validateResetPasswordInputMiddleware,
   validateVerifyEmailInputMiddleware,
-} from "../middlewares/validationMiddleware";
+} from "../middlewares/validation-middleware";
 
 import { authController } from "../container";
 

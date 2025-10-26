@@ -1,24 +1,20 @@
 import { createTransport } from "nodemailer";
 import {
-  CompanyInfo,
   EmailOptions,
   ResetPasswordEmailParams,
   VerificationEmailParams,
   WelcomeEmailParams,
 } from "../types/email.types";
 import { ICompanyService, IEmailService } from "../types/interfaces";
+import { Company } from "@prisma/client";
 
 export class EmailService implements IEmailService {
   private transporter: any;
-  private company: CompanyInfo | null = null;
+  private company: Company | null = null;
 
-  constructor(nodemailerConfig: any, private companyService?: ICompanyService) {
+  constructor(nodemailerConfig: any, private companyService: ICompanyService) {
     this.transporter = createTransport(nodemailerConfig);
-
-    
-    if (companyService) {
-      this.loadCompany(companyService);
-    }
+    this.loadCompany(companyService);
   }
   public async loadCompany(companyService: ICompanyService): Promise<void> {
     this.company = await companyService.getCompany();

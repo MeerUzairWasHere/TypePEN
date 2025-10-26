@@ -63,7 +63,6 @@ export const {
   authService,
   userService,
   companyService,
-  // Controllers
   authController,
   // userController,
   // companyController,

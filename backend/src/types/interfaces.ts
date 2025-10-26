@@ -5,9 +5,8 @@ import {
   UpdateUserInput,
 } from ".";
 import { CompanyService } from "../services/company.service";
-import { PrismaClient } from "@prisma/client";
+import { Company, PrismaClient } from "@prisma/client";
 import {
-  CompanyInfo,
   ResetPasswordEmailParams,
   VerificationEmailParams,
   WelcomeEmailParams,
@@ -28,12 +27,12 @@ export interface IEmailService {
 }
 
 export interface ICompanyService {
-  createCompany(params: { data: CompanyInput }): Promise<CompanyInfo>;
-  getCompany(): Promise<CompanyInfo>;
+  createCompany(params: { data: CompanyInput }): Promise<Company>;
+  getCompany(): Promise<Company | null>;
   updateComany(params: {
     companyId: string;
     data: CompanyInput;
-  }): Promise<CompanyInfo>;
+  }): Promise<Company>;
   deleteCompany(): Promise<void>;
 }
 
@@ -44,22 +43,13 @@ export interface IPrismaService extends PrismaClient {
 }
 
 export interface IUserService {
-  getCurrentUser(userId: number): Promise<TokenUser | null>;
-  updateUser(userId: number, data: UpdateUserInput): Promise<TokenUser>;
+  getCurrentUser(tokenUser: TokenUser): Promise<TokenUser | null>;
+  updateUser(userId: string, data: UpdateUserInput): Promise<TokenUser>;
   updateUserPassword(
-    userId: number,
+    userId: string,
     data: UpdatePasswordInput
   ): Promise<{ msg: string }>;
-  deleteUser(userId: number): Promise<{ msg: string }>;
-  getUserProfile(userId: number): Promise<{
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    isVerified: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  } | null>;
+  deleteUser(userId: string): Promise<{ msg: string }>;
 }
 
 export interface IAuthService {
@@ -67,7 +57,6 @@ export interface IAuthService {
     data: RegisterInput,
     origin: string
   ): Promise<{
-    user: any;
     msg: string;
   }>;
 
@@ -76,13 +65,13 @@ export interface IAuthService {
     userAgent: string,
     ip: string
   ): Promise<{
-    user: any;
+    user: TokenUser;
     refreshToken: string;
   }>;
 
   verifyEmail(data: VerifyEmailInput): Promise<{ msg: string }>;
 
-  logout(userId: number): Promise<{ msg: string }>;
+  logout(tokenUser: TokenUser): Promise<{ msg: string }>;
 
   forgotPassword(
     data: ForgotPasswordInput,
@@ -93,8 +82,4 @@ export interface IAuthService {
   >;
 
   resetPassword(data: ResetPasswordInput): Promise<{ msg: string }>;
-
-  getUserById(userId: number): Promise<any | null>;
-
-  checkEmailExists(email: string): Promise<boolean>;
 }

@@ -1,13 +1,10 @@
 import * as express from "express";
+import { TokenUser } from ".";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: {
-        userId: number;
-        name: string;
-        role: string;
-      };
+      user?: TokenUser;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateUser } from "../middlewares/authentication";
+import { authenticateUser } from "../middlewares/authentication-middleware";
 import {
   showCurrentUser,
   updateUser,
@@ -11,12 +11,12 @@ const router = Router();
 import {
   validateUpdateUserInputMiddleware,
   validateUpdatePasswordInputMiddleware,
-} from "../middlewares/validationMiddleware";
+} from "../middlewares/validation-middleware";
 
 router.route("/current-user").get(authenticateUser, showCurrentUser);
 
 router
-  .route("/updateUser")
+  .route("/update-user")
   .patch(authenticateUser, validateUpdateUserInputMiddleware, updateUser);
 router
   .route("/updateUserPassword")

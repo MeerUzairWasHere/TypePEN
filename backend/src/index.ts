@@ -15,9 +15,9 @@ import userRouter from "./routes/user.routes";
 import companyRouter from "./routes/company.routes";
 
 // Middleware
-import notFoundMiddleware from "./middlewares/not-found";
-import errorHandlerMiddleware from "./middlewares/error-handler";
-import { companyService, emailService, prismaService } from "./container";
+import notFoundMiddleware from "./middlewares/not-found-middleware";
+import errorHandlerMiddleware from "./middlewares/error-handler-middleware";
+import { prismaService } from "./container";
 
 // const __dirname = dirname(fileURLToPath(import.meta.url)); // Uncomment if you have a frontend
 
@@ -75,7 +75,6 @@ const port = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     await prismaService.connect();
-    await emailService.loadCompany(companyService);
     app.listen(port, () => {
       console.log(`Server is listening on http://localhost:${port}/...`);
     });

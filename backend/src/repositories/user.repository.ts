@@ -1,28 +1,6 @@
-import { User, Token } from "@prisma/client";
+import { User, Token, Role } from "@prisma/client";
 import { IPrismaService } from "../types/interfaces";
-
-// User Data Transfer Objects
-export interface UserSelectBasic {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
-
-export interface UserSelectWithDates extends UserSelectBasic {
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UserSelectProfile {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  isVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { TokenUser } from "../types";
 
 // User Update Interfaces
 export interface UpdateUserData {
@@ -55,8 +33,9 @@ export interface UpdateUserVerificationData {
 export interface CreateUserData {
   name: string;
   email: string;
+  username: string;
   password: string;
-  role: string;
+  role: Role;
   verificationToken: string;
 }
 
@@ -65,7 +44,7 @@ export interface CreateTokenData {
   refreshToken: string;
   ip: string;
   userAgent: string;
-  userId: number;
+  userId: string;
 }
 
 export class UserRepository {
@@ -83,42 +62,27 @@ export class UserRepository {
     });
   }
 
-  async findById(userId: number): Promise<User | null> {
+  async findById(userId: string): Promise<User | null> {
     return await this.prismaService.user.findUnique({
       where: { id: userId },
     });
   }
 
-  async findByIdBasic(userId: number): Promise<UserSelectBasic | null> {
+  async findByIdBasic(userId: string): Promise<User | null> {
     return await this.prismaService.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
     });
   }
 
-  async findByIdProfile(userId: number): Promise<UserSelectProfile | null> {
+  async findByIdProfile(userId: string): Promise<User | null> {
     return await this.prismaService.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isVerified: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
   }
 
   async findByEmailExcludingUser(
     email: string,
-    excludeUserId: number
+    excludeUserId: string
   ): Promise<User | null> {
     return await this.prismaService.user.findFirst({
       where: {
@@ -136,45 +100,23 @@ export class UserRepository {
     return !!user;
   }
 
-  async exists(userId: number): Promise<boolean> {
-    const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-      select: { id: true },
-    });
-    return !!user;
-  }
-
   // ==================== User Mutation Operations ====================
 
-  async createUser(data: CreateUserData): Promise<UserSelectWithDates> {
+  async createUser(data: CreateUserData): Promise<User> {
     return await this.prismaService.user.create({
       data,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
   }
 
-  async update(userId: number, data: UpdateUserData): Promise<UserSelectBasic> {
+  async update(userId: string, data: UpdateUserData): Promise<User> {
     return await this.prismaService.user.update({
       where: { id: userId },
       data,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
     });
   }
 
   async updatePassword(
-    userId: number,
+    userId: string,
     data: UpdateUserPasswordData
   ): Promise<void> {
     await this.prismaService.user.update({
@@ -213,7 +155,7 @@ export class UserRepository {
     });
   }
 
-  async delete(userId: number): Promise<void> {
+  async delete(userId: string): Promise<void> {
     await this.prismaService.user.delete({
       where: { id: userId },
     });
@@ -221,7 +163,7 @@ export class UserRepository {
 
   // ==================== Token Operations ====================
 
-  async findTokenByUserId(userId: number): Promise<Token | null> {
+  async findTokenByUserId(userId: string): Promise<Token | null> {
     return await this.prismaService.token.findFirst({
       where: { user: { id: userId } },
     });
@@ -233,10 +175,10 @@ export class UserRepository {
     });
   }
 
-  async deleteUserTokens(userId: number): Promise<void> {
+  async deleteUserTokens(userId: string): Promise<void> {
     await this.prismaService.token.deleteMany({
       where: {
-        userId: Number(userId),
+        userId: userId,
       },
     });
   }

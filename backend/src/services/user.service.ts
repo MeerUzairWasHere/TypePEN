@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { createTokenUser, comparePassword, hashPassword } from "../utils";
 import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
 import { UnauthenticatedError } from "../errors";
@@ -8,17 +7,17 @@ import { UserRepository } from "../repositories/user.repository";
 export class UserService implements IUserService {
   constructor(private userRepository: UserRepository) {}
 
-  async getCurrentUser(userId: number): Promise<TokenUser | null> {
-    const user = await this.userRepository.findByIdBasic(userId);
+  async getCurrentUser(tokenUser: TokenUser): Promise<TokenUser | null> {
+    const user = await this.userRepository.findByIdBasic(tokenUser.id);
 
     if (!user) {
       return null;
     }
 
-    return createTokenUser(user as User);
+    return createTokenUser(user);
   }
 
-  async updateUser(userId: number, data: UpdateUserInput): Promise<TokenUser> {
+  async updateUser(userId: string, data: UpdateUserInput): Promise<TokenUser> {
     const { email, name } = data;
 
     if (email) {
@@ -34,11 +33,11 @@ export class UserService implements IUserService {
 
     const user = await this.userRepository.update(userId, { email, name });
 
-    return createTokenUser(user as User);
+    return createTokenUser(user);
   }
 
   async updateUserPassword(
-    userId: number,
+    userId: string,
     data: UpdatePasswordInput
   ): Promise<{ msg: string }> {
     const { oldPassword, newPassword } = data;
@@ -69,13 +68,13 @@ export class UserService implements IUserService {
     return { msg: "Success! Password Updated." };
   }
 
-  async deleteUser(userId: number): Promise<{ msg: string }> {
+  async deleteUser(userId: string): Promise<{ msg: string }> {
     await this.userRepository.delete(userId);
 
     return { msg: "User account deleted successfully" };
   }
 
-  async getUserProfile(userId: number) {
-    return await this.userRepository.findByIdProfile(userId);
+  async getUsersCount(): Promise<number> {
+    return await this.userRepository.getUserCount();
   }
 }

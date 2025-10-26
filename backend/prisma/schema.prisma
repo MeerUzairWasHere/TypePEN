@@ -14,28 +14,34 @@ datasource db {
 }
 
 model User {
-  id                          Int       @id @default(autoincrement())
-  name                        String
+  id                          String    @id @default(uuid())
+  username                    String    @unique
+  name                        String    @db.VarChar(255)
   email                       String    @unique
-  password                    String
-  role                        String    @default("user")
-  verificationToken           String?
+  password                    String    @db.VarChar(255)
+  role                        Role      @default(User)
+  verificationToken           String?   @db.VarChar(255)
   isVerified                  Boolean   @default(false)
   verified                    DateTime?
-  passwordToken               String?
+  passwordToken               String?   @db.VarChar(255)
   passwordTokenExpirationDate DateTime?
   createdAt                   DateTime  @default(now())
   updatedAt                   DateTime  @updatedAt
   Token                       Token[]
 }
 
+enum Role {
+  Admin
+  User
+}
+
 model Token {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid())
   refreshToken String   @unique
-  ip           String
-  userAgent    String
+  ip           String   @db.VarChar(255)
+  userAgent    String   @db.VarChar(255)
   isValid      Boolean  @default(true)
-  userId       Int
+  userId       String
   user         User     @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -45,9 +51,9 @@ model Company {
   id        String   @id @default(uuid())
   name      String   @unique @db.VarChar(255)
   address   String   @db.VarChar(255)
-  website   String   @unique
-  phone     String   @unique
-  email     String   @unique
+  website   String   @unique @db.VarChar(255)
+  phone     String   @unique @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

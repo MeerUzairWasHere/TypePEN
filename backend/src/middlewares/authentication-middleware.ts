@@ -5,10 +5,9 @@ import {
   UnauthorizedError,
 } from "../errors";
 import { attachCookiesToResponse, isTokenValid } from "../utils/index.js";
-import { Role } from "../types";
 import { prismaService } from "../container";
+import { Role } from "@prisma/client";
 
-// Middleware to authenticate a user
 export const authenticateUser = async (
   req: Request,
   res: Response,
@@ -49,7 +48,6 @@ export const authenticateUser = async (
   }
 };
 
-// Middleware to authorize a user based on roles
 export const authorizePermissions = (...roles: Role[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req?.user) {
