@@ -1,43 +1,48 @@
 import { Router } from "express";
-import { authenticateUser } from "../middlewares/authentication-middleware";
-
-import {
-  validateForgotPasswordInputMiddleware,
-  validateLoginInputMiddleware,
-  validateRegisterInputMiddleware,
-  validateResetPasswordInputMiddleware,
-  validateVerifyEmailInputMiddleware,
-} from "../middlewares/validation-middleware";
-
 import { authController } from "../container";
+import { validate } from "../decorators";
+import {
+  validateForgotPasswordInput,
+  validateLoginInput,
+  validateRegisterInput,
+  validateResetPasswordInput,
+  validateVerifyEmailInput,
+} from "../validators";
+
+import { authGuard, verifiedGuard } from "../guards";
 
 const router = Router();
 
 router.post(
   "/register",
-  validateRegisterInputMiddleware,
+  validate(validateRegisterInput),
   authController.registerUser
 );
 
-router.post("/login", validateLoginInputMiddleware, authController.login);
+router.post(
+  "/login",
+  validate(validateLoginInput),
+  verifiedGuard,
+  authController.login
+);
 
-router.delete("/logout", authenticateUser, authController.logout);
+router.delete("/logout", authGuard, authController.logout);
 
 router.post(
   "/verify-email",
-  validateVerifyEmailInputMiddleware,
+  validate(validateVerifyEmailInput),
   authController.verifyEmail
 );
 
 router.post(
   "/forgot-password",
-  validateForgotPasswordInputMiddleware,
+  validate(validateForgotPasswordInput),
   authController.forgotPassword
 );
 
 router.post(
   "/reset-password",
-  validateResetPasswordInputMiddleware,
+  validate(validateResetPasswordInput),
   authController.resetPassword
 );
 

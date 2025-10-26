@@ -9,6 +9,7 @@ export interface TokenUserDto {
   name: string;
   role: string;
   email: string;
+  isVerified: boolean;
 }
 
 export type UserCreateInputDto = z.infer<typeof validateUserCreateInput>;

@@ -8,16 +8,16 @@ import {
   UserUpdateInputDto,
 } from "../dto";
 import { userService } from "../container";
+import { currentUser } from "../decorators";
 
 export const showCurrentUser = async (
   req: Request,
   res: Response<TokenUserDto | null>
 ) => {
-  if (!req.user?.id) {
-    throw new UnauthenticatedError("User not authenticated");
-  }
+  const loggedInUser = currentUser(req);
 
-  const user = await userService.getCurrentUser(req.user);
+  const user = await userService.getCurrentUser(loggedInUser);
+
   res.status(StatusCodes.OK).json(user);
 };
 
@@ -25,11 +25,9 @@ export const updateUser = async (
   req: Request<{}, {}, UserUpdateInputDto>,
   res: Response<{ user: TokenUserDto }>
 ) => {
-  if (!req.user?.id) {
-    throw new UnauthenticatedError("User not authenticated");
-  }
+  const { id } = currentUser(req);
 
-  const tokenUser = await userService.updateUser(req.user.id, req.body);
+  const tokenUser = await userService.updateUser(id, req.body);
 
   attachCookiesToResponse({ res, user: tokenUser, refreshToken: "" });
 
@@ -40,11 +38,9 @@ export const updateUserPassword = async (
   req: Request<{}, {}, UpdatePasswordInputDto>,
   res: Response<{ msg: string }>
 ) => {
-  if (!req.user?.id) {
-    throw new UnauthenticatedError("User not authenticated");
-  }
+  const { id } = currentUser(req);
 
-  const result = await userService.updateUserPassword(req.user.id, req.body);
+  const result = await userService.updateUserPassword(id, req.body);
 
   res.status(StatusCodes.OK).json(result);
 };

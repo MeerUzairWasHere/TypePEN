@@ -23,7 +23,7 @@ export const nodemailerConfig: SMTPConfig = {
   },
 };
 
-export const emailDetails: CompanyInfo = {
+export const emailDetaidls: CompanyInfo = {
   name: "TypePEN",
   email: "support@typepen.com",
   website: "https://typepen.com",

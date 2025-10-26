@@ -1,29 +1,27 @@
 import { Router } from "express";
-import { authenticateUser } from "../middlewares/authentication-middleware";
 import {
   showCurrentUser,
   updateUser,
   updateUserPassword,
 } from "../controllers/user.controller";
 
-const router = Router();
+import { validate } from "../decorators";
 
 import {
-  validateUpdateUserInputMiddleware,
-  validateUpdatePasswordInputMiddleware,
-} from "../middlewares/validation-middleware";
+  validateUpdatePasswordInput,
+  validateUserUpdateInput,
+} from "../validators";
+import { authGuard } from "../guards";
 
-router.route("/current-user").get(authenticateUser, showCurrentUser);
+const router = Router();
+
+router.route("/current-user").get(authGuard, showCurrentUser);
 
 router
   .route("/update-user")
-  .patch(authenticateUser, validateUpdateUserInputMiddleware, updateUser);
+  .patch(authGuard, validate(validateUserUpdateInput), updateUser);
 router
   .route("/update-user-password")
-  .patch(
-    authenticateUser,
-    validateUpdatePasswordInputMiddleware,
-    updateUserPassword
-  );
+  .patch(authGuard, validate(validateUpdatePasswordInput), updateUserPassword);
 
 export default router;

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { BadRequestError, UnauthenticatedError } from "../errors";
+import { BadRequestError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
 import {
   ForgotPasswordInputDto,
@@ -12,6 +12,7 @@ import {
 } from "../dto";
 
 import { IAuthService } from "../interfaces";
+import { currentUser } from "../decorators";
 
 export class AuthController {
   constructor(private authService: IAuthService) {}
@@ -32,6 +33,7 @@ export class AuthController {
     req: Request<{}, {}, LoginInputDto>,
     res: Response<TokenUserDto>
   ): Promise<void> => {
+    // TODO: create one decorator for this
     const userAgent = req.headers["user-agent"] || "unknown";
     const ip = req.ip;
 
@@ -59,11 +61,9 @@ export class AuthController {
   };
 
   logout = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user?.id) {
-      throw new UnauthenticatedError("User not authenticated");
-    }
+    const loggedInUser = currentUser(req);
 
-    const result = await this.authService.logout(req.user);
+    const result = await this.authService.logout(loggedInUser);
 
     res.cookie("accessToken", "logout", {
       httpOnly: true,

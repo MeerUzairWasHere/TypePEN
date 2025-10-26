@@ -50,12 +50,13 @@ export class ConflictError extends Error {
   }
 }
 
-export class ForbidenError extends Error {
+
+export class ForbiddenError extends Error {
   public statusCode: number;
 
   constructor(message: string) {
     super(message);
-    this.name = "ForbidenError";
+    this.name = "ForbiddenError";
     this.statusCode = StatusCodes.FORBIDDEN;
   }
 }

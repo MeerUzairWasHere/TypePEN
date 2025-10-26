@@ -1,6 +1,6 @@
+import "module-alias/register";
 import dotenv from "dotenv";
 dotenv.config();
-import "express-async-errors";
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";

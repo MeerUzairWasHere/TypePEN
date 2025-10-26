@@ -1,36 +1,37 @@
 import { Router } from "express";
-import {
-  authenticateUser,
-  authorizePermissions,
-} from "../middlewares/authentication-middleware";
-import { validateCompanyInputMiddleware } from "../middlewares/validation-middleware";
+import { Role } from "@prisma/client";
 import {
   createCompany,
   deleteCompany,
   getCompany,
   updateCompany,
 } from "../controllers/company.controller";
-import { Role } from "@prisma/client";
+import { validate } from "../decorators";
+import {
+  validateCompanyCreateInput,
+  validateCompanyUpdateInput,
+} from "../validators";
+import { authGuard, rolesGuard } from "../guards";
 
 const router = Router();
 
 router
   .route("/")
   .post(
-    authenticateUser,
-    authorizePermissions(Role.Admin),
-    validateCompanyInputMiddleware,
+    authGuard,
+    rolesGuard(Role.Admin),
+    validate(validateCompanyCreateInput),
     createCompany
   )
-  .get(authenticateUser, authorizePermissions(Role.Admin), getCompany)
-  .delete(authenticateUser, authorizePermissions(Role.Admin), deleteCompany);
+  .get(authGuard, rolesGuard(Role.Admin), getCompany)
+  .delete(authGuard, rolesGuard(Role.Admin), deleteCompany);
 
 router
   .route("/:companyId")
   .patch(
-    authenticateUser,
-    authorizePermissions(Role.Admin),
-    validateCompanyInputMiddleware,
+    authGuard,
+    rolesGuard(Role.Admin),
+    validate(validateCompanyUpdateInput),
     updateCompany
   );
 

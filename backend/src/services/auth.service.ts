@@ -67,10 +67,6 @@ export class AuthService implements IAuthService {
       throw new UnauthenticatedError("Invalid Credentials");
     }
 
-    if (!user.isVerified) {
-      throw new UnauthenticatedError("Please verify your email");
-    }
-
     const tokenUser = createTokenUser(user);
 
     let refreshToken: string;

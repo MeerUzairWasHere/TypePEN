@@ -1,14 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import {
-  ForbidenError,
-  UnauthenticatedError,
-  UnauthorizedError,
-} from "../errors";
-import { attachCookiesToResponse, isTokenValid } from "../utils/index.js";
+import { NextFunction, Request, Response } from "express";
+import { UnauthenticatedError } from "../errors";
+import { attachCookiesToResponse, isTokenValid } from "../utils";
 import { prismaService } from "../container";
-import { Role } from "@prisma/client";
 
-export const authenticateUser = async (
+export const authGuard = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -46,16 +41,4 @@ export const authenticateUser = async (
   } catch (error) {
     throw new UnauthenticatedError("Authentication Invalid");
   }
-};
-
-export const authorizePermissions = (...roles: Role[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    if (!req?.user) {
-      throw new UnauthorizedError("Unauthorized to access this route");
-    }
-    if (!roles.includes(req?.user?.role as Role)) {
-      throw new ForbidenError("Unauthorized to access this route");
-    }
-    next();
-  };
 };
