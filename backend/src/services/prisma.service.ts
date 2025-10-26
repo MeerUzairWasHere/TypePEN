@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { IPrismaService } from "../types/interfaces";
+import { IPrismaService } from "../interfaces";
 
 export class PrismaService extends PrismaClient implements IPrismaService {
   constructor() {

@@ -5,7 +5,7 @@ import {
   VerificationEmailParams,
   WelcomeEmailParams,
 } from "../types/email.types";
-import { ICompanyService, IEmailService } from "../types/interfaces";
+import { ICompanyService, IEmailService } from "../interfaces";
 import { Company } from "@prisma/client";
 
 export class EmailService implements IEmailService {

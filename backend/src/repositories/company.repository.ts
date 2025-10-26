@@ -1,5 +1,5 @@
 import { Company } from "@prisma/client";
-import { IPrismaService } from "../types/interfaces";
+import { IPrismaService } from "../interfaces";
 import { CompanyCreateInput, CompanyUpdateInput } from "../types";
 
 export class CompanyRepository {

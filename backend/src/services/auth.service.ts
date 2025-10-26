@@ -14,7 +14,7 @@ import {
   VerifyEmailInput,
 } from "../types";
 import { BadRequestError, UnauthenticatedError } from "../errors";
-import { IAuthService, IEmailService } from "../types/interfaces";
+import { IAuthService, IEmailService } from "../interfaces";
 import { UserRepository } from "../repositories/user.repository";
 
 export class AuthService implements IAuthService {

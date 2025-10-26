@@ -1,5 +1,5 @@
 import { User, Token } from "@prisma/client";
-import { IPrismaService } from "../types/interfaces";
+import { IPrismaService } from "../interfaces";
 import { UserCreateInput, UserUpdateInput } from "../types";
 import {
   CreateTokenDto,

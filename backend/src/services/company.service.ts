@@ -1,8 +1,8 @@
+import { Company } from "@prisma/client";
 import { ConflictError } from "../errors";
 import { CompanyCreateInput, CompanyUpdateInput } from "../types";
-import { ICompanyService } from "../types/interfaces";
-import { CompanyRepository } from "../repositories/company.repository";
-import { Company } from "@prisma/client";
+import { ICompanyService } from "../interfaces";
+import { CompanyRepository } from "../repositories";
 
 export class CompanyService implements ICompanyService {
   constructor(private companyRepository: CompanyRepository) {}

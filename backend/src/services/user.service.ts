@@ -1,8 +1,8 @@
 import { createTokenUser, comparePassword, hashPassword } from "../utils";
 import { TokenUser, UpdatePasswordInput, UserUpdateInput } from "../types";
 import { UnauthenticatedError } from "../errors";
-import { IUserService } from "../types/interfaces";
-import { UserRepository } from "../repositories/user.repository";
+import { IUserService } from "../interfaces";
+import { UserRepository } from "../repositories";
 
 export class UserService implements IUserService {
   constructor(private userRepository: UserRepository) {}
