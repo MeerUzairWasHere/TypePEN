@@ -1,9 +1,11 @@
 import {
-  CompanyInput,
+  CompanyCreateInput,
+  CompanyUpdateInput,
   TokenUser,
   UpdatePasswordInput,
-  UpdateUserInput,
+  UserUpdateInput,
 } from ".";
+
 import { CompanyService } from "../services/company.service";
 import { Company, PrismaClient } from "@prisma/client";
 import {
@@ -27,11 +29,11 @@ export interface IEmailService {
 }
 
 export interface ICompanyService {
-  createCompany(params: { data: CompanyInput }): Promise<Company>;
+  createCompany(params: CompanyCreateInput): Promise<Company>;
   getCompany(): Promise<Company | null>;
   updateComany(params: {
     companyId: string;
-    data: CompanyInput;
+    data: CompanyUpdateInput;
   }): Promise<Company>;
   deleteCompany(): Promise<void>;
 }
@@ -44,7 +46,7 @@ export interface IPrismaService extends PrismaClient {
 
 export interface IUserService {
   getCurrentUser(tokenUser: TokenUser): Promise<TokenUser | null>;
-  updateUser(userId: string, data: UpdateUserInput): Promise<TokenUser>;
+  updateUser(userId: string, data: UserUpdateInput): Promise<TokenUser>;
   updateUserPassword(
     userId: string,
     data: UpdatePasswordInput

@@ -1,5 +1,5 @@
 import { ConflictError } from "../errors";
-import { CompanyInput } from "../types";
+import { CompanyCreateInput, CompanyUpdateInput } from "../types";
 import { ICompanyService } from "../types/interfaces";
 import { CompanyRepository } from "../repositories/company.repository";
 import { Company } from "@prisma/client";
@@ -7,7 +7,7 @@ import { Company } from "@prisma/client";
 export class CompanyService implements ICompanyService {
   constructor(private companyRepository: CompanyRepository) {}
 
-  async createCompany({ data }: { data: CompanyInput }) {
+  async createCompany(data: CompanyCreateInput) {
     const companyAlreadyExists = await this.companyRepository.findFirst();
 
     if (companyAlreadyExists) {
@@ -30,7 +30,7 @@ export class CompanyService implements ICompanyService {
     data,
   }: {
     companyId: string;
-    data: CompanyInput;
+    data: CompanyUpdateInput;
   }) {
     await this.getCompany();
 

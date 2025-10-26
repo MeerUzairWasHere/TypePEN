@@ -1,5 +1,5 @@
 import { createTokenUser, comparePassword, hashPassword } from "../utils";
-import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
+import { TokenUser, UpdatePasswordInput, UserUpdateInput } from "../types";
 import { UnauthenticatedError } from "../errors";
 import { IUserService } from "../types/interfaces";
 import { UserRepository } from "../repositories/user.repository";
@@ -17,7 +17,7 @@ export class UserService implements IUserService {
     return createTokenUser(user);
   }
 
-  async updateUser(userId: string, data: UpdateUserInput): Promise<TokenUser> {
+  async updateUser(userId: string, data: UserUpdateInput): Promise<TokenUser> {
     const { email, name } = data;
 
     if (email) {

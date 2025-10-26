@@ -1,6 +1,6 @@
 import { Company } from "@prisma/client";
 import { IPrismaService } from "../types/interfaces";
-import { CompanyInput } from "../types";
+import { CompanyCreateInput, CompanyUpdateInput } from "../types";
 
 export class CompanyRepository {
   constructor(private prismaService: IPrismaService) {}
@@ -15,13 +15,13 @@ export class CompanyRepository {
     });
   }
 
-  async create(data: CompanyInput): Promise<Company> {
+  async create(data: CompanyCreateInput): Promise<Company> {
     return await this.prismaService.company.create({
       data,
     });
   }
 
-  async update(companyId: string, data: CompanyInput): Promise<Company> {
+  async update(companyId: string, data: CompanyUpdateInput): Promise<Company> {
     return await this.prismaService.company.update({
       where: { id: companyId },
       data,
@@ -30,16 +30,5 @@ export class CompanyRepository {
 
   async deleteAll(): Promise<void> {
     await this.prismaService.company.deleteMany();
-  }
-
-  async exists(): Promise<boolean> {
-    const company = await this.prismaService.company.findFirst({
-      select: { id: true },
-    });
-    return !!company;
-  }
-
-  async count(): Promise<number> {
-    return await this.prismaService.company.count();
   }
 }

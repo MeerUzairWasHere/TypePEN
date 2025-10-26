@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
-import { TokenUser, UpdatePasswordInput, UpdateUserInput } from "../types";
+import { TokenUser, UpdatePasswordInput, UserUpdateInput } from "../types";
 import { userService } from "../container";
 
 export const showCurrentUser = async (
@@ -18,7 +18,7 @@ export const showCurrentUser = async (
 };
 
 export const updateUser = async (
-  req: Request<{}, {}, UpdateUserInput>,
+  req: Request<{}, {}, UserUpdateInput>,
   res: Response<{ user: TokenUser }>
 ) => {
   if (!req.user?.id) {
@@ -27,7 +27,6 @@ export const updateUser = async (
 
   const tokenUser = await userService.updateUser(req.user.id, req.body);
 
-  // Refresh the cookies with updated user info
   attachCookiesToResponse({ res, user: tokenUser, refreshToken: "" });
 
   res.status(StatusCodes.OK).json({ user: tokenUser });

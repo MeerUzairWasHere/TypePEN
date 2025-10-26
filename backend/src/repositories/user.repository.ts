@@ -1,51 +1,13 @@
-import { User, Token, Role } from "@prisma/client";
+import { User, Token } from "@prisma/client";
 import { IPrismaService } from "../types/interfaces";
-import { TokenUser } from "../types";
-
-// User Update Interfaces
-export interface UpdateUserData {
-  email?: string;
-  name?: string;
-}
-
-export interface UpdateUserPasswordData {
-  password: string;
-}
-
-export interface UpdatePasswordTokenData {
-  passwordToken: string;
-  passwordTokenExpirationDate: Date;
-}
-
-export interface UpdatePasswordData {
-  password: string;
-  passwordToken: null;
-  passwordTokenExpirationDate: null;
-}
-
-export interface UpdateUserVerificationData {
-  isVerified: boolean;
-  verified: Date;
-  verificationToken: string;
-}
-
-// User Create Interface
-export interface CreateUserData {
-  name: string;
-  email: string;
-  username: string;
-  password: string;
-  role: Role;
-  verificationToken: string;
-}
-
-// Token Interface
-export interface CreateTokenData {
-  refreshToken: string;
-  ip: string;
-  userAgent: string;
-  userId: string;
-}
+import { UserCreateInput, UserUpdateInput } from "../types";
+import {
+  CreateTokenDto,
+  UpdatePasswordDto,
+  UpdatePasswordTokenDto,
+  UpdateUserPasswordDto,
+  UpdateUserVerificationDto,
+} from "../dto";
 
 export class UserRepository {
   constructor(private prismaService: IPrismaService) {}
@@ -102,13 +64,13 @@ export class UserRepository {
 
   // ==================== User Mutation Operations ====================
 
-  async createUser(data: CreateUserData): Promise<User> {
+  async createUser(data: UserCreateInput): Promise<User> {
     return await this.prismaService.user.create({
       data,
     });
   }
 
-  async update(userId: string, data: UpdateUserData): Promise<User> {
+  async update(userId: string, data: UserUpdateInput): Promise<User> {
     return await this.prismaService.user.update({
       where: { id: userId },
       data,
@@ -117,7 +79,7 @@ export class UserRepository {
 
   async updatePassword(
     userId: string,
-    data: UpdateUserPasswordData
+    data: UpdateUserPasswordDto
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { id: userId },
@@ -127,7 +89,7 @@ export class UserRepository {
 
   async updateUserVerification(
     email: string,
-    data: UpdateUserVerificationData
+    data: UpdateUserVerificationDto
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { email },
@@ -137,7 +99,7 @@ export class UserRepository {
 
   async updateUserPasswordToken(
     email: string,
-    data: UpdatePasswordTokenData
+    data: UpdatePasswordTokenDto
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { email },
@@ -147,7 +109,7 @@ export class UserRepository {
 
   async updateUserPassword(
     email: string,
-    data: UpdatePasswordData
+    data: UpdatePasswordDto
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { email },
@@ -169,7 +131,7 @@ export class UserRepository {
     });
   }
 
-  async createToken(data: CreateTokenData): Promise<Token> {
+  async createToken(data: CreateTokenDto): Promise<Token> {
     return await this.prismaService.token.create({
       data,
     });

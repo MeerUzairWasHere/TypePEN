@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../errors";
 import { z, ZodType } from "zod";
 import {
-  validateCompanyInput,
+  validateCompanyCreateInput,
   validateForgotPasswordInput,
   validateLoginInput,
   validateRegisterInput,
   validateResetPasswordInput,
   validateUpdatePasswordInput,
-  validateUpdateUserInput,
+  validateUserUpdateInput,
   validateVerifyEmailInput,
 } from "../types";
 
@@ -44,6 +44,9 @@ export const validateRegisterInputMiddleware = withValidationErrors(
   validateRegisterInput
 );
 
+export const validateLoginInputMiddleware =
+  withValidationErrors(validateLoginInput);
+
 export const validateResetPasswordInputMiddleware = withValidationErrors(
   validateResetPasswordInput
 );
@@ -61,11 +64,9 @@ export const validateUpdatePasswordInputMiddleware = withValidationErrors(
 );
 
 export const validateUpdateUserInputMiddleware = withValidationErrors(
-  validateUpdateUserInput
+  validateUserUpdateInput
 );
 
-export const validateLoginInputMiddleware =
-  withValidationErrors(validateLoginInput);
-
-export const validateCompanyInputMiddleware =
-  withValidationErrors(validateCompanyInput);
+export const validateCompanyInputMiddleware = withValidationErrors(
+  validateCompanyCreateInput
+);

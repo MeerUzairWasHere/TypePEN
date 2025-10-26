@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { CompanyInput } from "../types";
 import { StatusCodes } from "http-status-codes";
 import { companyService } from "../container";
+import { CompanyCreateInput, CompanyUpdateInput } from "../types";
 
 export const createCompany = async (
-  req: Request<{}, {}, CompanyInput>,
+  req: Request<{}, {}, CompanyCreateInput>,
   res: Response
 ) => {
-  const result = await companyService.createCompany({ data: req.body });
+  const result = await companyService.createCompany(req.body);
 
   res.status(StatusCodes.CREATED).json(result);
 };
@@ -18,7 +18,7 @@ export const getCompany = async (req: Request, res: Response) => {
 };
 
 export const updateCompany = async (
-  req: Request<{ companyId: string }, {}, CompanyInput>,
+  req: Request<{ companyId: string }, {}, CompanyUpdateInput>,
   res: Response
 ) => {
   const result = await companyService.updateComany({
