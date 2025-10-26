@@ -2,12 +2,16 @@ import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
 import { UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
-import { TokenUser, UpdatePasswordInput, UserUpdateInput } from "../types";
+import {
+  TokenUserDto,
+  UpdatePasswordInputDto,
+  UserUpdateInputDto,
+} from "../dto";
 import { userService } from "../container";
 
 export const showCurrentUser = async (
   req: Request,
-  res: Response<TokenUser | null>
+  res: Response<TokenUserDto | null>
 ) => {
   if (!req.user?.id) {
     throw new UnauthenticatedError("User not authenticated");
@@ -18,8 +22,8 @@ export const showCurrentUser = async (
 };
 
 export const updateUser = async (
-  req: Request<{}, {}, UserUpdateInput>,
-  res: Response<{ user: TokenUser }>
+  req: Request<{}, {}, UserUpdateInputDto>,
+  res: Response<{ user: TokenUserDto }>
 ) => {
   if (!req.user?.id) {
     throw new UnauthenticatedError("User not authenticated");
@@ -33,7 +37,7 @@ export const updateUser = async (
 };
 
 export const updateUserPassword = async (
-  req: Request<{}, {}, UpdatePasswordInput>,
+  req: Request<{}, {}, UpdatePasswordInputDto>,
   res: Response<{ msg: string }>
 ) => {
   if (!req.user?.id) {

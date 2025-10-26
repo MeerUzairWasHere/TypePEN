@@ -1,10 +1,10 @@
 import { createTransport } from "nodemailer";
 import {
-  EmailOptions,
-  ResetPasswordEmailParams,
-  VerificationEmailParams,
-  WelcomeEmailParams,
-} from "../types/email.types";
+  EmailOptionsDto,
+  ResetPasswordEmailDto,
+  VerificationEmailDto,
+  WelcomeEmailDto,
+} from "../dto";
 import { ICompanyService, IEmailService } from "../interfaces";
 import { Company } from "@prisma/client";
 
@@ -20,7 +20,11 @@ export class EmailService implements IEmailService {
     this.company = await companyService.getCompany();
   }
 
-  private async sendEmail({ to, subject, html }: EmailOptions): Promise<void> {
+  private async sendEmail({
+    to,
+    subject,
+    html,
+  }: EmailOptionsDto): Promise<void> {
     if (!this.company) {
       throw new Error("Company info not loaded. Call loadCompany() first.");
     }
@@ -41,7 +45,7 @@ export class EmailService implements IEmailService {
     token,
     origin,
     expirationHours = 1,
-  }: ResetPasswordEmailParams): Promise<void> {
+  }: ResetPasswordEmailDto): Promise<void> {
     if (!this.company) {
       throw new Error("Company info not loaded. Call loadCompany() first.");
     }
@@ -100,7 +104,7 @@ export class EmailService implements IEmailService {
     verificationToken,
     origin,
     expirationHours = 24,
-  }: VerificationEmailParams): Promise<void> {
+  }: VerificationEmailDto): Promise<void> {
     if (!this.company) {
       throw new Error("Company info not loaded. Call loadCompany() first.");
     }
@@ -152,7 +156,7 @@ export class EmailService implements IEmailService {
   public async sendWelcomeEmail({
     name,
     email,
-  }: WelcomeEmailParams): Promise<void> {
+  }: WelcomeEmailDto): Promise<void> {
     if (!this.company) {
       throw new Error("Company info not loaded. Call loadCompany() first.");
     }

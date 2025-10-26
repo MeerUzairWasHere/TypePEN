@@ -1,5 +1,9 @@
 import { createTokenUser, comparePassword, hashPassword } from "../utils";
-import { TokenUser, UpdatePasswordInput, UserUpdateInput } from "../types";
+import {
+  TokenUserDto,
+  UserUpdateInputDto,
+  UpdatePasswordInputDto,
+} from "../dto";
 import { UnauthenticatedError } from "../errors";
 import { IUserService } from "../interfaces";
 import { UserRepository } from "../repositories";
@@ -7,7 +11,7 @@ import { UserRepository } from "../repositories";
 export class UserService implements IUserService {
   constructor(private userRepository: UserRepository) {}
 
-  async getCurrentUser(tokenUser: TokenUser): Promise<TokenUser | null> {
+  async getCurrentUser(tokenUser: TokenUserDto): Promise<TokenUserDto | null> {
     const user = await this.userRepository.findByIdBasic(tokenUser.id);
 
     if (!user) {
@@ -17,7 +21,10 @@ export class UserService implements IUserService {
     return createTokenUser(user);
   }
 
-  async updateUser(userId: string, data: UserUpdateInput): Promise<TokenUser> {
+  async updateUser(
+    userId: string,
+    data: UserUpdateInputDto
+  ): Promise<TokenUserDto> {
     const { email, name } = data;
 
     if (email) {
@@ -38,7 +45,7 @@ export class UserService implements IUserService {
 
   async updateUserPassword(
     userId: string,
-    data: UpdatePasswordInput
+    data: UpdatePasswordInputDto
   ): Promise<{ msg: string }> {
     const { oldPassword, newPassword } = data;
 

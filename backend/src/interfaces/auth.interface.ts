@@ -1,41 +1,40 @@
-import { TokenUser } from "../types";
-
 import {
-  ForgotPasswordInput,
-  LoginInput,
-  RegisterInput,
-  ResetPasswordInput,
-  VerifyEmailInput,
-} from "../types";
+  ForgotPasswordInputDto,
+  LoginInputDto,
+  RegisterInputDto,
+  ResetPasswordInputDto,
+  VerifyEmailInputDto,
+  TokenUserDto,
+} from "../dto";
 
 export interface IAuthService {
   registerUser(
-    data: RegisterInput,
+    data: RegisterInputDto,
     origin: string
   ): Promise<{
     msg: string;
   }>;
 
   login(
-    data: LoginInput,
+    data: LoginInputDto,
     userAgent: string,
     ip: string
   ): Promise<{
-    user: TokenUser;
+    user: TokenUserDto;
     refreshToken: string;
   }>;
 
-  verifyEmail(data: VerifyEmailInput): Promise<{ msg: string }>;
+  verifyEmail(data: VerifyEmailInputDto): Promise<{ msg: string }>;
 
-  logout(tokenUser: TokenUser): Promise<{ msg: string }>;
+  logout(tokenUser: TokenUserDto): Promise<{ msg: string }>;
 
   forgotPassword(
-    data: ForgotPasswordInput,
+    data: ForgotPasswordInputDto,
     origin: string
   ): Promise<
     | { msg: string }
     | { name: string; email: string; token: string; origin: string }
   >;
 
-  resetPassword(data: ResetPasswordInput): Promise<{ msg: string }>;
+  resetPassword(data: ResetPasswordInputDto): Promise<{ msg: string }>;
 }

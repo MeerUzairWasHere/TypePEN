@@ -3,21 +3,21 @@ import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
 import {
-  ForgotPasswordInput,
-  LoginInput,
-  RegisterInput,
-  ResetPasswordInput,
-  TokenUser,
-  VerifyEmailInput,
-} from "../types";
+  ForgotPasswordInputDto,
+  LoginInputDto,
+  RegisterInputDto,
+  ResetPasswordInputDto,
+  TokenUserDto,
+  VerifyEmailInputDto,
+} from "../dto";
 
-import { AuthService } from "../services/auth.service";
+import { IAuthService } from "../interfaces";
 
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: IAuthService) {}
 
   registerUser = async (
-    req: Request<{}, {}, RegisterInput>,
+    req: Request<{}, {}, RegisterInputDto>,
     res: Response
   ): Promise<void> => {
     const result = await this.authService.registerUser(
@@ -29,8 +29,8 @@ export class AuthController {
   };
 
   login = async (
-    req: Request<{}, {}, LoginInput>,
-    res: Response<TokenUser>
+    req: Request<{}, {}, LoginInputDto>,
+    res: Response<TokenUserDto>
   ): Promise<void> => {
     const userAgent = req.headers["user-agent"] || "unknown";
     const ip = req.ip;
@@ -51,7 +51,7 @@ export class AuthController {
   };
 
   verifyEmail = async (
-    req: Request<{}, {}, VerifyEmailInput>,
+    req: Request<{}, {}, VerifyEmailInputDto>,
     res: Response
   ): Promise<void> => {
     const result = await this.authService.verifyEmail(req.body);
@@ -77,7 +77,7 @@ export class AuthController {
   };
 
   forgotPassword = async (
-    req: Request<{}, {}, ForgotPasswordInput>,
+    req: Request<{}, {}, ForgotPasswordInputDto>,
     res: Response
   ): Promise<void> => {
     const result = await this.authService.forgotPassword(
@@ -89,7 +89,7 @@ export class AuthController {
   };
 
   resetPassword = async (
-    req: Request<{}, {}, ResetPasswordInput>,
+    req: Request<{}, {}, ResetPasswordInputDto>,
     res: Response
   ): Promise<void> => {
     const result = await this.authService.resetPassword(req.body);

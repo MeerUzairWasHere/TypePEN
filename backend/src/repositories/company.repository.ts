@@ -1,6 +1,6 @@
 import { Company } from "@prisma/client";
 import { IPrismaService } from "../interfaces";
-import { CompanyCreateInput, CompanyUpdateInput } from "../types";
+import { CompanyCreateInputDto, CompanyUpdateInputDto } from "../dto";
 
 export class CompanyRepository {
   constructor(private prismaService: IPrismaService) {}
@@ -15,13 +15,16 @@ export class CompanyRepository {
     });
   }
 
-  async create(data: CompanyCreateInput): Promise<Company> {
+  async create(data: CompanyCreateInputDto): Promise<Company> {
     return await this.prismaService.company.create({
       data,
     });
   }
 
-  async update(companyId: string, data: CompanyUpdateInput): Promise<Company> {
+  async update(
+    companyId: string,
+    data: CompanyUpdateInputDto
+  ): Promise<Company> {
     return await this.prismaService.company.update({
       where: { id: companyId },
       data,

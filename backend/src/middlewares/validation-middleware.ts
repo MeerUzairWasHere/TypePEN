@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../errors";
 import { z, ZodType } from "zod";
+
 import {
   validateCompanyCreateInput,
+  validateUserUpdateInput,
   validateForgotPasswordInput,
   validateLoginInput,
   validateRegisterInput,
   validateResetPasswordInput,
   validateUpdatePasswordInput,
-  validateUserUpdateInput,
   validateVerifyEmailInput,
-} from "../types";
+} from "../validators";
 
 const isEmpty = (obj: object): boolean => {
   return Object.keys(obj).length === 0;

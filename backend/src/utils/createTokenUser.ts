@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
-import { TokenUser } from "../types";
+import { TokenUserDto } from "../dto";
 
-export const createTokenUser = (user: User): TokenUser => {
+export const createTokenUser = (user: User): TokenUserDto => {
   return { id: user.id, name: user.name, role: user.role, email: user.email };
 };

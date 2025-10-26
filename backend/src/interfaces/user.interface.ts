@@ -1,11 +1,15 @@
-import { TokenUser, UpdatePasswordInput, UserUpdateInput } from "../types";
+import {
+  TokenUserDto,
+  UpdatePasswordInputDto,
+  UserUpdateInputDto,
+} from "../dto";
 
 export interface IUserService {
-  getCurrentUser(tokenUser: TokenUser): Promise<TokenUser | null>;
-  updateUser(userId: string, data: UserUpdateInput): Promise<TokenUser>;
+  getCurrentUser(tokenUser: TokenUserDto): Promise<TokenUserDto | null>;
+  updateUser(userId: string, data: UserUpdateInputDto): Promise<TokenUserDto>;
   updateUserPassword(
     userId: string,
-    data: UpdatePasswordInput
+    data: UpdatePasswordInputDto
   ): Promise<{ msg: string }>;
   deleteUser(userId: string): Promise<{ msg: string }>;
 }

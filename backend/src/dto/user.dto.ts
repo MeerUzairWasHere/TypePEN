@@ -1,3 +1,20 @@
+import { z } from "zod";
+import {
+  validateUserCreateInput,
+  validateUserUpdateInput,
+} from "../validators";
+
+export interface TokenUserDto {
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+}
+
+export type UserCreateInputDto = z.infer<typeof validateUserCreateInput>;
+
+export type UserUpdateInputDto = z.infer<typeof validateUserUpdateInput>;
+
 export interface UpdatePasswordTokenDto {
   passwordToken: string;
   passwordTokenExpirationDate: Date;

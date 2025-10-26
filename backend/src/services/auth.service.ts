@@ -6,16 +6,16 @@ import {
   comparePassword,
 } from "../utils";
 import {
-  ForgotPasswordInput,
-  LoginInput,
-  RegisterInput,
-  ResetPasswordInput,
-  TokenUser,
-  VerifyEmailInput,
-} from "../types";
+  ForgotPasswordInputDto,
+  LoginInputDto,
+  RegisterInputDto,
+  ResetPasswordInputDto,
+  TokenUserDto,
+  VerifyEmailInputDto,
+} from "../dto";
 import { BadRequestError, UnauthenticatedError } from "../errors";
 import { IAuthService, IEmailService } from "../interfaces";
-import { UserRepository } from "../repositories/user.repository";
+import { UserRepository } from "../repositories";
 
 export class AuthService implements IAuthService {
   constructor(
@@ -23,7 +23,7 @@ export class AuthService implements IAuthService {
     private userRepository: UserRepository
   ) {}
 
-  async registerUser(data: RegisterInput, origin: string) {
+  async registerUser(data: RegisterInputDto, origin: string) {
     const { email, name, password, username } = data;
 
     const userCount = await this.userRepository.getUserCount();
@@ -53,7 +53,7 @@ export class AuthService implements IAuthService {
     };
   }
 
-  async login(data: LoginInput, userAgent: string, ip: string) {
+  async login(data: LoginInputDto, userAgent: string, ip: string) {
     const { email, password } = data;
 
     const user = await this.userRepository.findUserByEmail(email);
@@ -97,7 +97,7 @@ export class AuthService implements IAuthService {
     };
   }
 
-  async verifyEmail(data: VerifyEmailInput) {
+  async verifyEmail(data: VerifyEmailInputDto) {
     const { verificationToken, email } = data;
     const user = await this.userRepository.findUserByEmail(email);
 
@@ -123,13 +123,13 @@ export class AuthService implements IAuthService {
     return { msg: "Email Verified" };
   }
 
-  async logout(tokenUser: TokenUser) {
+  async logout(tokenUser: TokenUserDto) {
     await this.userRepository.deleteUserTokens(tokenUser.id);
 
     return { msg: "User logged out!" };
   }
 
-  async forgotPassword(data: ForgotPasswordInput, origin: string) {
+  async forgotPassword(data: ForgotPasswordInputDto, origin: string) {
     const { email } = data;
 
     const user = await this.userRepository.findUserByEmail(email);
@@ -158,7 +158,7 @@ export class AuthService implements IAuthService {
     return { msg: "Password reset email sent" };
   }
 
-  async resetPassword(data: ResetPasswordInput) {
+  async resetPassword(data: ResetPasswordInputDto) {
     const { token, email, newPassword } = data;
 
     const user = await this.userRepository.findUserByEmail(email);

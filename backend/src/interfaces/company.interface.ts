@@ -1,12 +1,12 @@
-import { CompanyCreateInput, CompanyUpdateInput } from "../types";
+import { CompanyCreateInputDto, CompanyUpdateInputDto } from "../dto";
 import { Company } from "@prisma/client";
 
 export interface ICompanyService {
-  createCompany(params: CompanyCreateInput): Promise<Company>;
+  createCompany(params: CompanyCreateInputDto): Promise<Company>;
   getCompany(): Promise<Company | null>;
   updateComany(params: {
     companyId: string;
-    data: CompanyUpdateInput;
+    data: CompanyUpdateInputDto;
   }): Promise<Company>;
   deleteCompany(): Promise<void>;
 }

@@ -1,9 +1,10 @@
 import { User, Token } from "@prisma/client";
 import { IPrismaService } from "../interfaces";
-import { UserCreateInput, UserUpdateInput } from "../types";
 import {
   CreateTokenDto,
   UpdatePasswordDto,
+  UserCreateInputDto,
+  UserUpdateInputDto,
   UpdatePasswordTokenDto,
   UpdateUserPasswordDto,
   UpdateUserVerificationDto,
@@ -64,13 +65,13 @@ export class UserRepository {
 
   // ==================== User Mutation Operations ====================
 
-  async createUser(data: UserCreateInput): Promise<User> {
+  async createUser(data: UserCreateInputDto): Promise<User> {
     return await this.prismaService.user.create({
       data,
     });
   }
 
-  async update(userId: string, data: UserUpdateInput): Promise<User> {
+  async update(userId: string, data: UserUpdateInputDto): Promise<User> {
     return await this.prismaService.user.update({
       where: { id: userId },
       data,
