@@ -94,7 +94,6 @@ app.post("/api/v1/images", upload.array("imageUrls", 5), async (req, res) => {
     // Process uploaded images
     const images = await fileHandler.processUploadedFiles(req.files);
 
-    console.log(images);
 
     res.status(201).json({ status: "success", data: images });
   } catch (error) {

@@ -62,6 +62,10 @@ export class AuthService implements IAuthService {
       throw new UnauthenticatedError("Invalid Credentials");
     }
 
+    if (user.isVerified === false) {
+      throw new UnauthenticatedError("Please verify your email first");
+    }
+
     const isPasswordCorrect = await comparePassword(password, user.password);
     if (!isPasswordCorrect) {
       throw new UnauthenticatedError("Invalid Credentials");

@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+import "express-async-errors";
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
@@ -48,8 +49,17 @@ app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 100,
+    handler: (req, res, next, options) => {
+      // Pass a custom error object to the next middleware
+      const err = new Error("Too many requests. Please try again later.");
+      // Attach useful info
+      (err as any).statusCode = 429;
+      (err as any).retryAfter = options.windowMs / 1000 / 60 + " minutes";
+      next(err);
+    },
   })
 );
+
 app.use(helmet());
 app.use(cors());
 

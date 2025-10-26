@@ -28,7 +28,8 @@ export const authGuard = async (
     });
 
     if (!existingToken) {
-      throw new UnauthenticatedError("Authentication Invalid");
+      // Use next(error) instead of throw
+      return next(new UnauthenticatedError("Authentication Invalid"));
     }
 
     attachCookiesToResponse({
@@ -39,6 +40,7 @@ export const authGuard = async (
     req.user = payload.user;
     next();
   } catch (error) {
-    throw new UnauthenticatedError("Authentication Invalid");
+    // Pass error to next() instead of throwing
+    next(new UnauthenticatedError("Authentication Invalid"));
   }
 };

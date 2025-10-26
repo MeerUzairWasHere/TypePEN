@@ -22,7 +22,6 @@ router.post(
 router.post(
   "/login",
   validate(validateLoginInput),
-  verifiedGuard,
   authController.login
 );
 

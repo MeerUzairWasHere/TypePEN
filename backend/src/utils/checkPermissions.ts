@@ -1,15 +1,14 @@
+import { Role } from "@prisma/client";
 import { UnauthorizedError } from "../errors";
-
-interface RequestUser {
-  role: string;
-  userId: string;
-}
+import { TokenUserDto } from "../dto";
 
 export const checkPermissions = (
-  requestUser: RequestUser,
+  requestUser: TokenUserDto,
   resourceUserId: string
 ): void => {
-  if (requestUser.role === "admin") return;
-  if (requestUser.userId === resourceUserId.toString()) return;
-  throw new UnauthorizedError("Not authorized to access this route");
+  if (requestUser.role === Role.Admin) return;
+  if (requestUser.id === resourceUserId.toString()) return;
+  throw new UnauthorizedError(
+    "You don't have permission to access this resource."
+  );
 };

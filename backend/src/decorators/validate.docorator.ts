@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { z, ZodType } from "zod";
+import { ZodType } from "zod";
 import { BadRequestError } from "../errors";
 
 const isEmpty = (obj: object): boolean => {
@@ -17,13 +17,6 @@ export const validate =
 
       next();
     } catch (err) {
-      if (err instanceof z.core.$ZodError) {
-        const errorMessages = err.issues.map(
-          (error: z.core.$ZodIssue) => error.message
-        );
-
-        throw new BadRequestError(errorMessages.join(", "));
-      }
       next(err);
     }
   };

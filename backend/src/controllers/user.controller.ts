@@ -1,6 +1,5 @@
 import { StatusCodes } from "http-status-codes";
 import { Request, Response } from "express";
-import { UnauthenticatedError } from "../errors";
 import { attachCookiesToResponse } from "../utils";
 import {
   TokenUserDto,

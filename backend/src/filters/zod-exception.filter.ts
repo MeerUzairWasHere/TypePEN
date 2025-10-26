@@ -15,12 +15,11 @@ export const zodExceptionFilter = (
       message: error.message,
     }));
 
-    return res.status(StatusCodes.BAD_REQUEST).json({
+    res.status(StatusCodes.BAD_REQUEST).json({
       msg: "Validation failed",
       errors,
     });
   }
 
-  // Pass to next error handler
   next(err);
 };
