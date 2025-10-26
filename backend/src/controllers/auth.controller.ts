@@ -30,7 +30,7 @@ export class AuthController {
 
   login = async (
     req: Request<{}, {}, LoginInput>,
-    res: Response<{ user: TokenUser }>
+    res: Response<TokenUser>
   ): Promise<void> => {
     const userAgent = req.headers["user-agent"] || "unknown";
     const ip = req.ip;
@@ -47,7 +47,7 @@ export class AuthController {
 
     attachCookiesToResponse({ res, user, refreshToken });
 
-    res.status(StatusCodes.OK).json({ user });
+    res.status(StatusCodes.OK).json(user);
   };
 
   verifyEmail = async (

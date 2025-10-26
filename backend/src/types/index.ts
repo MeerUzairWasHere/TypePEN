@@ -29,14 +29,12 @@ export const validateRegisterInput = z.object({
     .max(20, { message: "Password must be at most 20 characters long" }),
 });
 
-// Infer the TypeScript type for the `validateRegisterInput` schema
 export type RegisterInput = z.infer<typeof validateRegisterInput>;
 
 export const validateLoginInput = z.object({
   email: z
     .email({ message: "Invalid email format" })
     .min(1, { message: "Email is required" }),
-
   password: z.string().min(1, { message: "Password is required" }),
 });
 export type LoginInput = z.infer<typeof validateLoginInput>;
@@ -50,7 +48,6 @@ export const validateUpdateUserInput = z
       .optional(),
 
     email: z
-      .string()
       .email({ message: "Invalid email format" })
       .min(1, { message: "Email is required" })
       .optional(),
@@ -61,10 +58,12 @@ export const validateUpdateUserInput = z
 export type UpdateUserInput = z.infer<typeof validateUpdateUserInput>;
 
 export const validateUpdatePasswordInput = z.object({
-  oldPassword: z.string().min(1, { message: "Current password is required" }),
+  oldPassword: z
+    .string("oldPassword is required")
+    .min(1, { message: "Current password is required" }),
 
   newPassword: z
-    .string()
+    .string("newPassword is required")
     .min(1, { message: "New password is required" })
     .min(8, { message: "New password must be at least 8 characters long" }),
 });
@@ -89,10 +88,10 @@ export const validateForgotPasswordInput = z.object({
 export type ForgotPasswordInput = z.infer<typeof validateForgotPasswordInput>;
 
 export const validateResetPasswordInput = z.object({
-  token: z.string().min(1, { message: "Token is required" }),
+  token: z.string("token is required").min(1, { message: "Token is required" }),
 
   newPassword: z
-    .string()
+    .string("newPassword is required")
     .min(1, { message: "New password is required" })
     .min(8, { message: "New password must be at least 8 characters long" }),
 
@@ -103,17 +102,21 @@ export const validateResetPasswordInput = z.object({
 export type ResetPasswordInput = z.infer<typeof validateResetPasswordInput>;
 
 export const validateCompanyInput = z.object({
-  id: z.string().min(1, { message: "ID is required" }).optional(),
+  name: z
+    .string("name is required")
+    .min(1, { message: "Company name is required" }),
 
-  name: z.string().min(1, { message: "Company name is required" }),
-
-  address: z.string().min(1, { message: "Address is required" }),
+  address: z
+    .string("address is required")
+    .min(1, { message: "Address is required" }),
 
   website: z
     .url({ message: "Invalid website URL format" })
     .min(1, { message: "Website is required" }),
 
-  phone: z.string().min(1, { message: "Phone number is required" }),
+  phone: z
+    .string("phone is required")
+    .min(1, { message: "Phone number is required" }),
 
   email: z
     .email({ message: "Invalid email format" })

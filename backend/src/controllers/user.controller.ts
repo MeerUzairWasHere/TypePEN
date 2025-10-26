@@ -7,14 +7,14 @@ import { userService } from "../container";
 
 export const showCurrentUser = async (
   req: Request,
-  res: Response<{ user: TokenUser | null }>
+  res: Response<TokenUser | null>
 ) => {
   if (!req.user?.id) {
     throw new UnauthenticatedError("User not authenticated");
   }
 
   const user = await userService.getCurrentUser(req.user);
-  res.status(StatusCodes.OK).json({ user });
+  res.status(StatusCodes.OK).json(user);
 };
 
 export const updateUser = async (

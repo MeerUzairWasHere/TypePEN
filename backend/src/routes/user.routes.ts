@@ -19,7 +19,7 @@ router
   .route("/update-user")
   .patch(authenticateUser, validateUpdateUserInputMiddleware, updateUser);
 router
-  .route("/updateUserPassword")
+  .route("/update-user-password")
   .patch(
     authenticateUser,
     validateUpdatePasswordInputMiddleware,

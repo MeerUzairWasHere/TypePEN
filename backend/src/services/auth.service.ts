@@ -132,10 +132,6 @@ export class AuthService implements IAuthService {
   async forgotPassword(data: ForgotPasswordInput, origin: string) {
     const { email } = data;
 
-    if (!email) {
-      throw new BadRequestError("Please provide a valid email");
-    }
-
     const user = await this.userRepository.findUserByEmail(email);
 
     if (!user) {
@@ -159,12 +155,7 @@ export class AuthService implements IAuthService {
       origin,
     });
 
-    return {
-      name: user.name,
-      email: user.email,
-      token: passwordToken,
-      origin,
-    };
+    return { msg: "Password reset email sent" };
   }
 
   async resetPassword(data: ResetPasswordInput) {
