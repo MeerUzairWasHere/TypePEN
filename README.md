@@ -1,24 +1,68 @@
 # TypeScript Backend Starter with PostgreSQL, Express, and Node.js
 
-A flexible backend starter built with **TypeScript**, **PostgreSQL**, **Express**, and **Node.js**. This boilerplate is designed to be backend-agnostic, allowing you to easily connect it with any frontend framework such as **React**, **Angular**, **Vue**, or a custom solution.
+A powerful and flexible **TypeScript backend boilerplate** built on top of **Express** and **PostgreSQL**, designed with a **NestJS-inspired modular architecture** — offering both **structure and freedom**.
 
-## Features
+This starter brings the best of both worlds:
 
-* **TypeScript**: Strongly typed JavaScript for a better development experience.
-* **Express**: Minimal and flexible Node.js web application framework.
-* **PostgreSQL**: Powerful open-source relational database.
-* **Backend-Agnostic**: Easily connect to any frontend.
-* **Easy Setup**: Quick initialization and project bootstrapping.
-* **Docker Support**: Spin up PostgreSQL instantly with Docker.
-
-## Requirements
-
-* **Node.js** (v14 or later)
-* **Docker** (optional, for local PostgreSQL setup)
+* **NestJS-style project structure** (with `guards`, `filters`, `decorators`, `dto`, `repositories`, etc.)
+* **Express-level flexibility**
+* **Class-based architecture** with **Dependency Injection (DI)** for easy scalability and plugin-based extensibility.
 
 ---
 
-## Getting Started
+## ✨ Features
+
+* ⚙️ **TypeScript** — Strong typing for reliability and better DX.
+* 🚀 **Express** — Lightweight, unopinionated, and extremely flexible.
+* 🧩 **NestJS-inspired architecture** — Organized modules with `controllers`, `services`, `guards`, `filters`, and more.
+* 🧠 **Dependency Injection (DI)** — Loosely coupled components for easier testing and plugin integration.
+* 🗄️ **PostgreSQL + Prisma ORM** — Powerful schema management and migrations.
+* 🔐 **Guards, Filters, Decorators** — Extendable request handling and validation patterns.
+* 📦 **DTOs and Validators (Zod)** — Type-safe input validation.
+* 🐳 **Docker Support** — Instantly spin up PostgreSQL locally.
+* 🧰 **Utility-first design** — Clean structure for middlewares, repositories, and helpers.
+* 📜 **OpenAPI/Swagger** — Auto-generated API documentation.
+
+---
+
+## 📁 Project Structure
+
+```
+backend/
+├── dist/
+├── node_modules/
+├── prisma/
+├── src/
+│   ├── configs/
+│   ├── controllers/
+│   ├── decorators/
+│   ├── dto/
+│   ├── errors/
+│   ├── filters/
+│   ├── guards/
+│   ├── interfaces/
+│   ├── middlewares/
+│   ├── repositories/
+│   ├── routes/
+│   ├── services/
+│   ├── types/
+│   ├── utils/
+│   ├── validators/
+│   ├── container.ts          # Dependency Injection container
+│   ├── index.ts              # Application entry point
+│   └── openApiSpec.ts        # Swagger/OpenAPI definition
+├── .env
+├── .env.example
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+> This structure follows the **NestJS philosophy of modular separation**, but keeps **Express’s unopinionated nature**, giving you full control over middleware and routing.
+
+---
+
+## ⚡ Getting Started
 
 ### 1. Clone the Repository
 
@@ -27,111 +71,80 @@ git clone https://github.com/MeerUzairWasHere/TypePEN.git
 cd TypePEN
 ```
 
----
-
 ### 2. Install Dependencies
 
 ```bash
 cd backend && npm install
 ```
 
-If you don't have TypeScript installed globally, install it with:
-
-```bash
-npm install -g typescript
-```
-
-Or install it locally in the project:
-
-```bash
-npm install --save-dev typescript
-```
-
----
-
 ### 3. Set Up the Database
 
-You have **two options** to set up the PostgreSQL database:
+Use either a **remote PostgreSQL provider** (Neon, Supabase, ElephantSQL) or **local Docker setup**.
 
-#### Option A: Use a Remote PostgreSQL Provider
+#### Option A: Remote Database
 
-1. Use services like [Neon](https://neon.tech), [ElephantSQL](https://www.elephantsql.com/), or your own hosted PostgreSQL.
-2. Copy the connection string.
-3. Rename `.env.example` to `.env` and paste your connection string:
+Rename `.env.example` → `.env` and add your connection string:
 
 ```env
-DATABASE_URL=your-remote-postgresql-connection-string
+DATABASE_URL=your-postgresql-url
 ```
 
----
-
-#### Option B: Use Docker Locally
-
-1. Run the following command to spin up a PostgreSQL container:
+#### Option B: Local Docker Database
 
 ```bash
 npm run db
 ```
 
-> This will create a PostgreSQL instance using Docker with default credentials defined in your `.env` file.
-
 ---
 
 ### 4. Run Migrations
-
-Before starting the server for the first time, apply the initial database schema:
 
 ```bash
 npm run dev:migrate
 ```
 
-> This command pushes the initial Prisma migration files to the database.
-
----
-
 ### 5. Start the Server
-
-Run the backend server:
 
 ```bash
 npm run dev
 ```
 
-If everything is set up correctly, you’ll see:
+Server will start on [http://localhost:3000](http://localhost:3000)
 
+---
+
+## 🧩 Dependency Injection and Extensibility
+
+This boilerplate uses a **class-based architecture** with a **DI container** (`container.ts`), enabling clean dependency management between services, repositories, and controllers.
+
+Example:
+
+```ts
+// user.service.ts
+export class UserService {
+  constructor(private userRepository: UserRepository) {}
+
+  async findAll() {
+    return this.userRepository.findMany();
+  }
+}
 ```
-Server is listening on http://localhost:3000/
-```
 
-The default port can be changed via the `.env` file.
+This design allows future **plugins** or **modules** (e.g., EmailService, CacheService) to be added seamlessly.
 
 ---
 
-### 6. Swagger Documentation (Optional)
+## 🧱 Framework Philosophy
 
-On first run, the server may redirect you to an API documentation page powered by Swagger UI.
-
-If you **don’t want** Swagger documentation, **comment out or remove** the Swagger-related code in `index.ts`.
-
----
-
-## Connecting with Frontend Frameworks
-
-This backend can be used with:
-
-* **React**
-* **Vue**
-* **Angular**
-* Or any other frontend via REST API calls.
+* **NestJS-like modularity** for organization.
+* **Express-like flexibility** for freedom.
+* **Class-based design** for scalability.
+* **DI-first approach** for maintainability.
 
 ---
 
-## License
+## 🧾 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Licensed under the [MIT License](LICENSE).
 
 ---
-
-### 🙋‍♂️ Need Help?
-
-If you have questions or need help getting started, feel free to reach out!
