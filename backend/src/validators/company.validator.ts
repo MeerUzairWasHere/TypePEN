@@ -21,6 +21,12 @@ export const validateCompanyCreateInput = z.object({
     .email({ message: "Invalid email format" })
     .min(1, { message: "email is required" })
     .max(255, { message: "email must be at most 255 characters long" }),
+  verified_resend_domain: z
+    .string("verified_resend_domain is required")
+    .min(1, { message: "verified_resend_domain is required" })
+    .max(55, {
+      message: "verified_resend_domain must be at most 55 characters long",
+    }),
 });
 
 export const validateCompanyUpdateInput = validateCompanyCreateInput.partial();

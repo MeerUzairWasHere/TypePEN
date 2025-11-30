@@ -9,7 +9,7 @@ import {
   validateVerifyEmailInput,
 } from "../validators";
 
-import { authGuard, verifiedGuard } from "../guards";
+import { authGuard } from "../guards";
 
 const router = Router();
 
@@ -19,11 +19,7 @@ router.post(
   authController.registerUser
 );
 
-router.post(
-  "/login",
-  validate(validateLoginInput),
-  authController.login
-);
+router.post("/login", validate(validateLoginInput), authController.login);
 
 router.delete("/logout", authGuard, authController.logout);
 

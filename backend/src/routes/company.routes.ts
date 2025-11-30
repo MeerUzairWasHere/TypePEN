@@ -1,11 +1,7 @@
 import { Router } from "express";
 import { Role } from "@prisma/client";
-import {
-  createCompany,
-  deleteCompany,
-  getCompany,
-  updateCompany,
-} from "../controllers/company.controller";
+import { companyController } from "../container";
+
 import { validate } from "../decorators";
 import {
   validateCompanyCreateInput,
@@ -17,14 +13,9 @@ const router = Router();
 
 router
   .route("/")
-  .post(
-    authGuard,
-    rolesGuard(Role.Admin),
-    validate(validateCompanyCreateInput),
-    createCompany
-  )
-  .get(authGuard, rolesGuard(Role.Admin), getCompany)
-  .delete(authGuard, rolesGuard(Role.Admin), deleteCompany);
+  .post(validate(validateCompanyCreateInput), companyController.createCompany)
+  .get(authGuard, rolesGuard(Role.Admin), companyController.getCompany)
+  .delete(authGuard, rolesGuard(Role.Admin), companyController.deleteCompany);
 
 router
   .route("/:companyId")
@@ -32,7 +23,7 @@ router
     authGuard,
     rolesGuard(Role.Admin),
     validate(validateCompanyUpdateInput),
-    updateCompany
+    companyController.updateCompany
   );
 
 export default router;

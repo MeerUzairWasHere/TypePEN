@@ -42,6 +42,7 @@ CREATE TABLE "public"."Company" (
     "website" VARCHAR(255) NOT NULL,
     "phone" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
+    "verified_resend_domain" VARCHAR(55) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

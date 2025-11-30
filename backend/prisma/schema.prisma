@@ -48,12 +48,13 @@ model Token {
 }
 
 model Company {
-  id        String   @id @default(uuid())
-  name      String   @unique @db.VarChar(255)
-  address   String   @db.VarChar(255)
-  website   String   @unique @db.VarChar(255)
-  phone     String   @unique @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String   @id @default(uuid())
+  name                   String   @unique @db.VarChar(255)
+  address                String   @db.VarChar(255)
+  website                String   @unique @db.VarChar(255)
+  phone                  String   @unique @db.VarChar(255)
+  email                  String   @unique @db.VarChar(255)
+  verified_resend_domain String   @db.VarChar(55)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }

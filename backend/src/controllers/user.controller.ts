@@ -6,40 +6,44 @@ import {
   UpdatePasswordInputDto,
   UserUpdateInputDto,
 } from "../dto";
-import { userService } from "../container";
+import { IUserService } from "../interfaces";
 import { currentUser } from "../decorators";
 
-export const showCurrentUser = async (
-  req: Request,
-  res: Response<TokenUserDto | null>
-) => {
-  const loggedInUser = currentUser(req);
+export class UserController {
+  constructor(private userService: IUserService) {}
 
-  const user = await userService.getCurrentUser(loggedInUser);
+  public showCurrentUser = async (
+    req: Request,
+    res: Response<TokenUserDto | null>
+  ): Promise<void> => {
+    const loggedInUser = currentUser(req);
 
-  res.status(StatusCodes.OK).json(user);
-};
+    const user = await this.userService.getCurrentUser(loggedInUser);
 
-export const updateUser = async (
-  req: Request<{}, {}, UserUpdateInputDto>,
-  res: Response<{ user: TokenUserDto }>
-) => {
-  const { id } = currentUser(req);
+    res.status(StatusCodes.OK).json(user);
+  };
 
-  const tokenUser = await userService.updateUser(id, req.body);
+  public updateUser = async (
+    req: Request<{}, {}, UserUpdateInputDto>,
+    res: Response<{ user: TokenUserDto }>
+  ): Promise<void> => {
+    const { id } = currentUser(req);
 
-  attachCookiesToResponse({ res, user: tokenUser, refreshToken: "" });
+    const tokenUser = await this.userService.updateUser(id, req.body);
 
-  res.status(StatusCodes.OK).json({ user: tokenUser });
-};
+    attachCookiesToResponse({ res, user: tokenUser, refreshToken: "" });
 
-export const updateUserPassword = async (
-  req: Request<{}, {}, UpdatePasswordInputDto>,
-  res: Response<{ msg: string }>
-) => {
-  const { id } = currentUser(req);
+    res.status(StatusCodes.OK).json({ user: tokenUser });
+  };
 
-  const result = await userService.updateUserPassword(id, req.body);
+  public updateUserPassword = async (
+    req: Request<{}, {}, UpdatePasswordInputDto>,
+    res: Response<{ msg: string }>
+  ): Promise<void> => {
+    const { id } = currentUser(req);
 
-  res.status(StatusCodes.OK).json(result);
-};
+    const result = await this.userService.updateUserPassword(id, req.body);
+
+    res.status(StatusCodes.OK).json(result);
+  };
+}

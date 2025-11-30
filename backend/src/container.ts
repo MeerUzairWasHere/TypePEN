@@ -1,5 +1,6 @@
-import { nodemailerConfig } from "./configs/nodemailer";
 import { AuthController } from "./controllers/auth.controller";
+import { CompanyController } from "./controllers/company.controller";
+import { UserController } from "./controllers/user.controller";
 import { CompanyRepository, UserRepository } from "./repositories";
 
 import {
@@ -27,8 +28,8 @@ class Container {
 
   // Controllers
   public authController: AuthController;
-  // public userController: UserController;
-  // public companyController: CompanyController;
+  public userController: UserController;
+  public companyController: CompanyController;
 
   constructor() {
     // Initialize Database
@@ -40,14 +41,17 @@ class Container {
 
     // Initialize Services
     this.companyService = new CompanyService(this.companyRepository);
-    this.emailService = new EmailService(nodemailerConfig, this.companyService);
+    this.emailService = new EmailService(
+      process.env.EMAIL_SERVICE_API_KEY!,
+      companyService
+    );
     this.authService = new AuthService(this.emailService, this.userRepository);
     this.userService = new UserService(this.userRepository);
 
     // Initialize Controllers
     this.authController = new AuthController(this.authService);
-    // this.userController = new UserController(this.userService);
-    // this.companyController = new CompanyController(this.companyService);
+    this.userController = new UserController(this.userService);
+    this.companyController = new CompanyController(this.companyService);
   }
 }
 
@@ -64,6 +68,6 @@ export const {
   userService,
   companyService,
   authController,
-  // userController,
-  // companyController,
+  userController,
+  companyController,
 } = container;
