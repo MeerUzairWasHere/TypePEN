@@ -1,4 +1,4 @@
-import { createTransport } from "nodemailer";
+import { Resend } from "resend";
 import {
   EmailOptionsDto,
   ResetPasswordEmailDto,
@@ -9,13 +9,14 @@ import { ICompanyService, IEmailService } from "../interfaces";
 import { Company } from "@prisma/client";
 
 export class EmailService implements IEmailService {
-  private transporter: any;
+  private resend: Resend;
   private company: Company | null = null;
 
-  constructor(nodemailerConfig: any, private companyService: ICompanyService) {
-    this.transporter = createTransport(nodemailerConfig);
+  constructor(apiKey: string, private companyService: ICompanyService) {
+    this.resend = new Resend(apiKey);
     this.loadCompany(companyService);
   }
+
   public async loadCompany(companyService: ICompanyService): Promise<void> {
     this.company = await companyService.getCompany();
   }
@@ -30,13 +31,15 @@ export class EmailService implements IEmailService {
     }
 
     const mailOptions = {
-      from: `${this.company.name} <${this.company.email}>`,
+      from: `${
+        this.company.name
+      } <${`support@${this.company.verified_resend_domain}`}>`,
       to,
       subject,
       html,
     };
 
-    await this.transporter.sendMail(mailOptions);
+    await this.resend.emails.send(mailOptions);
   }
 
   public async sendResetPasswordEmail({

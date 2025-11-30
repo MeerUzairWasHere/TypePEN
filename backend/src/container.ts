@@ -43,7 +43,7 @@ class Container {
     this.companyService = new CompanyService(this.companyRepository);
     this.emailService = new EmailService(
       process.env.EMAIL_SERVICE_API_KEY!,
-      companyService
+      this.companyService
     );
     this.authService = new AuthService(this.emailService, this.userRepository);
     this.userService = new UserService(this.userRepository);
