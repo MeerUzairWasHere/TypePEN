@@ -6,19 +6,13 @@ import {
   WelcomeEmailDto,
 } from "../dto";
 import { ICompanyService, IEmailService } from "../interfaces";
-import { Company } from "@prisma/client";
+import { NotFoundError } from "../errors";
 
 export class EmailService implements IEmailService {
   private resend: Resend;
-  private company: Company | null = null;
 
   constructor(apiKey: string, private companyService: ICompanyService) {
     this.resend = new Resend(apiKey);
-    this.loadCompany(companyService);
-  }
-
-  public async loadCompany(companyService: ICompanyService): Promise<void> {
-    this.company = await companyService.getCompany();
   }
 
   private async sendEmail({
@@ -26,14 +20,14 @@ export class EmailService implements IEmailService {
     subject,
     html,
   }: EmailOptionsDto): Promise<void> {
-    if (!this.company) {
-      throw new Error("Company info not loaded. Call loadCompany() first.");
+    const company = await this.companyService.getCompany();
+
+    if (!company) {
+      throw new NotFoundError("Company not found. Call loadCompany() first.");
     }
 
     const mailOptions = {
-      from: `${
-        this.company.name
-      } <${`support@${this.company.verified_resend_domain}`}>`,
+      from: `${company.name} <${`support@${company.verified_resend_domain}`}>`,
       to,
       subject,
       html,
@@ -49,8 +43,10 @@ export class EmailService implements IEmailService {
     origin,
     expirationHours = 1,
   }: ResetPasswordEmailDto): Promise<void> {
-    if (!this.company) {
-      throw new Error("Company info not loaded. Call loadCompany() first.");
+    const company = await this.companyService.getCompany();
+
+    if (!company) {
+      throw new NotFoundError("Company not found. Call loadCompany() first.");
     }
 
     const resetURL = `${origin}/reset-password?token=${token}&email=${email}`;
@@ -86,9 +82,9 @@ export class EmailService implements IEmailService {
     <!-- Footer -->
     <div style="border-top: 1px solid #e5e7eb; padding-top: 24px; text-align: center;">
       <div style="color: #6b7280; font-size: 14px;">
-        <p>${this.company.name}</p>
+        <p>${company.name}</p>
         <p style="margin-top: 8px;">Need help? <a href="mailto:${
-          this.company.email
+          company.email
         }" style="color: #9333ea; text-decoration: underline;">Contact support</a></p>
       </div>
     </div>
@@ -96,7 +92,7 @@ export class EmailService implements IEmailService {
 
     await this.sendEmail({
       to: email,
-      subject: `${this.company.name} Password Reset Request`,
+      subject: `${company.name} Password Reset Request`,
       html,
     });
   }
@@ -108,16 +104,17 @@ export class EmailService implements IEmailService {
     origin,
     expirationHours = 24,
   }: VerificationEmailDto): Promise<void> {
-    if (!this.company) {
-      throw new Error("Company info not loaded. Call loadCompany() first.");
-    }
+    const company = await this.companyService.getCompany();
 
+    if (!company) {
+      throw new NotFoundError("Company not found. Call loadCompany() first.");
+    }
     const verifyEmail = `${origin}/verify-email?token=${verificationToken}&email=${email}`;
 
     const html = `<div style="background-color: #ffffff; padding: 24px;">
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 24px; border-bottom: 1px solid #e5e7eb; padding-bottom: 24px;">
-      <h1 style="font-size: 24px; font-weight: 700; color: #7e22ce;">Welcome to ${this.company.name}!</h1>
+      <h1 style="font-size: 24px; font-weight: 700; color: #7e22ce;">Welcome to ${company.name}!</h1>
     </div>
     
     <!-- Body -->
@@ -143,15 +140,15 @@ export class EmailService implements IEmailService {
     <!-- Footer -->
     <div style="border-top: 1px solid #e5e7eb; padding-top: 24px; text-align: center;">
       <div style="color: #6b7280; font-size: 14px;">
-        <p>${this.company.name}</p>
-        <p style="margin-top: 8px;">Contact us: <a href="mailto:${this.company.email}" style="color: #9333ea; text-decoration: underline;">${this.company.email}</a></p>
+        <p>${company.name}</p>
+        <p style="margin-top: 8px;">Contact us: <a href="mailto:${company.email}" style="color: #9333ea; text-decoration: underline;">${company.email}</a></p>
       </div>
     </div>
   </div>`;
 
     await this.sendEmail({
       to: email,
-      subject: `${this.company.name} Email Verification`,
+      subject: `${company.name} Email Verification`,
       html,
     });
   }
@@ -160,18 +157,19 @@ export class EmailService implements IEmailService {
     name,
     email,
   }: WelcomeEmailDto): Promise<void> {
-    if (!this.company) {
-      throw new Error("Company info not loaded. Call loadCompany() first.");
-    }
+    const company = await this.companyService.getCompany();
 
-    const websiteUrl = this.company.website;
-    const address = this.company.address;
+    if (!company) {
+      throw new NotFoundError("Company not found. Call loadCompany() first.");
+    }
+    const websiteUrl = company.website;
+    const address = company.address;
 
     const html = `<div style="background-color: #ffffff; font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <!-- Header with gradient background -->
       <div style="background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%); padding: 32px; text-align: center;">
         <h1 style="font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px;">Welcome to ${
-          this.company.name
+          company.name
         }!</h1>
         <p style="color: rgba(255,255,255,0.9); font-size: 16px;">We're thrilled to have you on board, ${name}!</p>
       </div>
@@ -180,7 +178,7 @@ export class EmailService implements IEmailService {
       <div style="padding: 24px;">
         <p style="color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
           Thank you for joining ${
-            this.company.name
+            company.name
           }. We're excited to have you as part of our community.
         </p>
         
@@ -213,7 +211,7 @@ export class EmailService implements IEmailService {
             Our customer support team is here to assist you with any questions you may have.
           </p>
           <a href="mailto:${
-            this.company.email
+            company.email
           }" style="color: #9333ea; text-decoration: none; font-weight: 500;">Contact Support</a>
         </div>
       </div>
@@ -222,12 +220,12 @@ export class EmailService implements IEmailService {
       <div style="background-color: #f9fafb; padding: 24px; text-align: center; font-size: 12px; color: #6b7280;">
         <p style="margin-bottom: 16px;">
           You're receiving this email because you signed up for an account on ${
-            this.company.name
+            company.name
           }.
         </p>
         <p style="margin-bottom: 16px;">
           &copy; ${new Date().getFullYear()} ${
-      this.company.name
+      company.name
     }. All rights reserved.<br>
           ${address}
         </p>
@@ -236,7 +234,7 @@ export class EmailService implements IEmailService {
 
     await this.sendEmail({
       to: email,
-      subject: `Welcome to ${this.company.name}, ${name}!`,
+      subject: `Welcome to ${company.name}, ${name}!`,
       html,
     });
   }

@@ -45,7 +45,11 @@ class Container {
       process.env.EMAIL_SERVICE_API_KEY!,
       this.companyService
     );
-    this.authService = new AuthService(this.emailService, this.userRepository);
+    this.authService = new AuthService(
+      this.emailService,
+      this.userRepository,
+      this.companyService
+    );
     this.userService = new UserService(this.userRepository);
 
     // Initialize Controllers

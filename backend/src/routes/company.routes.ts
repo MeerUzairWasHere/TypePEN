@@ -13,7 +13,12 @@ const router = Router();
 
 router
   .route("/")
-  .post(validate(validateCompanyCreateInput), companyController.createCompany)
+  .post(
+    authGuard,
+    rolesGuard(Role.Admin),
+    validate(validateCompanyCreateInput),
+    companyController.createCompany
+  )
   .get(authGuard, rolesGuard(Role.Admin), companyController.getCompany)
   .delete(authGuard, rolesGuard(Role.Admin), companyController.deleteCompany);
 

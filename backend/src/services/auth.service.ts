@@ -14,20 +14,22 @@ import {
   VerifyEmailInputDto,
 } from "../dto";
 import { BadRequestError, UnauthenticatedError } from "../errors";
-import { IAuthService, IEmailService } from "../interfaces";
+import { IAuthService, ICompanyService, IEmailService } from "../interfaces";
 import { UserRepository } from "../repositories";
+import { Role } from "@prisma/client";
 
 export class AuthService implements IAuthService {
   constructor(
     private emailService: IEmailService,
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private companyService: ICompanyService
   ) {}
 
   async registerUser(data: RegisterInputDto, origin: string) {
     const { email, name, password, username } = data;
 
     const userCount = await this.userRepository.getUserCount();
-    const role = userCount === 0 ? "Admin" : "User";
+    const role = userCount === 0 ? Role.Admin : Role.User;
 
     const hashedPassword = await hashPassword(password);
     const verificationToken = randomBytes(40).toString("hex");
@@ -38,15 +40,21 @@ export class AuthService implements IAuthService {
       username,
       password: hashedPassword,
       role,
-      verificationToken,
+      verificationToken: role === Role.User ? verificationToken : null,
+      isVerified: role === Role.Admin ? true : false,
+      verified: role === Role.Admin ? new Date() : null,
     });
 
-    await this.emailService.sendVerificationEmail({
-      name,
-      email,
-      verificationToken,
-      origin,
-    });
+    const hasCompany = await this.companyService.getCompany();
+
+    if (hasCompany?.verified_resend_domain) {
+      await this.emailService.sendVerificationEmail({
+        name,
+        email,
+        verificationToken,
+        origin,
+      });
+    }
 
     return {
       msg: "User created successfully",
