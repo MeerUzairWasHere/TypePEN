@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "public"."Role" AS ENUM ('Admin', 'User');
+CREATE TYPE "public"."Role" AS ENUM ('SuperAdmin', 'Admin', 'User');
 
 -- CreateTable
 CREATE TABLE "public"."User" (

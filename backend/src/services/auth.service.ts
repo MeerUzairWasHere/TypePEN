@@ -29,7 +29,7 @@ export class AuthService implements IAuthService {
     const { email, name, password, username } = data;
 
     const userCount = await this.userRepository.getUserCount();
-    const role = userCount === 0 ? Role.Admin : Role.User;
+    const role = userCount === 0 ? Role.SuperAdmin : Role.User;
 
     const hashedPassword = await hashPassword(password);
     const verificationToken = randomBytes(40).toString("hex");
@@ -41,8 +41,8 @@ export class AuthService implements IAuthService {
       password: hashedPassword,
       role,
       verificationToken: role === Role.User ? verificationToken : null,
-      isVerified: role === Role.Admin ? true : false,
-      verified: role === Role.Admin ? new Date() : null,
+      isVerified: role === Role.SuperAdmin ? true : false,
+      verified: role === Role.SuperAdmin ? new Date() : null,
     });
 
     const hasCompany = await this.companyService.getCompany();
