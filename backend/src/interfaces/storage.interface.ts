@@ -1,5 +1,4 @@
 export interface StorageUploadResult {
-  url: string;
   key: string;
 }
 
@@ -17,6 +16,4 @@ export interface IStorageService {
   delete(key: string): Promise<void>;
 
   getPublicUrl(key: string): string;
-
-  getSignedUrl(key: string, options?: SignedUrlOptions): Promise<string>;
 }

@@ -5,7 +5,7 @@ import {
   UpdatePasswordInputDto,
 } from "../dto";
 import { UnauthenticatedError } from "../errors";
-import { IStorageService, IUserService } from "../interfaces";
+import { IUserService } from "../interfaces";
 import { UserRepository } from "../repositories";
 
 export class UserService implements IUserService {

@@ -7,11 +7,11 @@ import { CompanyRepository, UserRepository } from "./repositories";
 import {
   AuthService,
   CompanyService,
+  createStorageService,
   EmailService,
   PrismaService,
   UserService,
 } from "./services";
-import { createStorageService } from "./services/storage/storage.factory";
 
 // Container to hold all instances
 class Container {
@@ -79,5 +79,5 @@ export const {
   authController,
   userController,
   companyController,
-  storageService
+  storageService,
 } = container;
