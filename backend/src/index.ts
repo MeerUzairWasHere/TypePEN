@@ -38,6 +38,7 @@ app.use(express.json());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use("/uploads", express.static("uploads"));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
@@ -67,6 +68,7 @@ app.use(cors());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/users", userRouter);
+
 
 // Remove this in production
 app.use("/documentation", swaggerUi.serve, swaggerUi.setup(openApiSpec));

@@ -1,15 +1,15 @@
 {
   "name": "type-pen",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
-    "start": "tsc -b && node ./dist/index.js",
+    "start": "tsc && node ./dist/index.js",
+    "build": "tsc",
     "dev": "npx prisma generate && npm run start",
     "migrate": "npx prisma migrate dev",
     "db:clear": "npx prisma migrate reset",
     "generate": "npx prisma generate",
-    "build": "npm i && tsc -b",
     "setup": "npm i",
     "db": "docker rm -f typepen-postgres || true && docker-compose up -d",
     "db:clean": "docker rm -f typepen-postgres && docker-compose up -d",
@@ -29,6 +29,8 @@
   },
   "homepage": "https://github.com/MeerUzairWasHere/TypePEN#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.956.0",
+    "@aws-sdk/s3-request-presigner": "^3.956.0",
     "@prisma/client": "^6.15.0",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
@@ -57,7 +59,6 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.3.0",
     "@types/swagger-ui-express": "^4.1.8",
-    "prisma": "^6.15.0",
-    "typescript": "^5.9.2"
+    "prisma": "^6.15.0"
   }
 }

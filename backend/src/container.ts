@@ -1,11 +1,13 @@
 import { AuthController } from "./controllers/auth.controller";
 import { CompanyController } from "./controllers/company.controller";
 import { UserController } from "./controllers/user.controller";
+import { IStorageService } from "./interfaces";
 import { CompanyRepository, UserRepository } from "./repositories";
 
 import {
   AuthService,
   CompanyService,
+  createStorageService,
   EmailService,
   PrismaService,
   UserService,
@@ -22,6 +24,8 @@ class Container {
 
   // Services
   public emailService: EmailService;
+  public storageService: IStorageService;
+
   public authService: AuthService;
   public userService: UserService;
   public companyService: CompanyService;
@@ -34,6 +38,7 @@ class Container {
   constructor() {
     // Initialize Database
     this.prismaService = new PrismaService();
+    this.storageService = createStorageService();
 
     // Initialize Repositories
     this.userRepository = new UserRepository(this.prismaService);
@@ -74,4 +79,5 @@ export const {
   authController,
   userController,
   companyController,
+  storageService,
 } = container;
