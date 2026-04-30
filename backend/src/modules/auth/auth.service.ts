@@ -62,7 +62,6 @@ export class AuthService {
     const hasCompany = await this.companyService.getCompany();
 
     if (hasCompany?.verified_resend_domain) {
-console.log(hasCompany.verified_resend_domain);
       await this.emailService.sendVerificationEmail({
         name,
         email,
