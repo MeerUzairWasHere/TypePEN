@@ -1,5 +1,5 @@
-import { TokenUserDto } from "../modules/users/dto";
-import { User } from "../modules/database/schema";
+import { User } from "../../database/schema";
+import { TokenUserDto } from "../dto";
 
 export const createTokenUser = (user: User): TokenUserDto => {
   return {

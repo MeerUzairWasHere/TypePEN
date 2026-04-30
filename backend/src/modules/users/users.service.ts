@@ -6,7 +6,8 @@ import {
 } from "./dto";
 import { UnauthenticatedError } from "../errors";
 import { UserRepository } from "./users.repository";
-import { comparePassword, createTokenUser, hashPassword } from "../../utils";
+import { comparePassword, hashPassword } from "../../utils";
+import { createTokenUser } from "./mappers";
 
 @Injectable()
 export class UsersService {

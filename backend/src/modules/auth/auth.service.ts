@@ -9,16 +9,12 @@ import {
   VerifyEmailInputDto,
 } from "./dto";
 import { BadRequestError, UnauthenticatedError } from "../errors";
-import {
-  comparePassword,
-  createTokenUser,
-  hashPassword,
-  hashString,
-} from "../../utils";
+import { comparePassword, hashPassword, hashString } from "../../utils";
 import { CompanyService } from "../company/company.service";
 import { EmailService } from "../email/email.service";
 import { UserRepository } from "../users/users.repository";
 import { Role } from "../database/schema";
+import { createTokenUser } from "../users/mappers";
 
 @Injectable()
 export class AuthService {
