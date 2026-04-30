@@ -45,7 +45,7 @@ export class UserRepository {
 
   async findByEmailExcludingUser(
     email: string,
-    excludeUserId: string
+    excludeUserId: string,
   ): Promise<User | null> {
     return this.prismaService.user.findFirst({
       where: {
@@ -56,10 +56,24 @@ export class UserRepository {
   }
 
   async checkEmailExists(email: string): Promise<boolean> {
-    const user = await this.prismaService.user.findUnique({
-      where: { email },
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        email,
+      },
       select: { id: true },
     });
+
+    return !!user;
+  }
+
+  async checkUsernameExists(username: string): Promise<boolean> {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        username,
+      },
+      select: { id: true },
+    });
+
     return !!user;
   }
 
@@ -78,7 +92,7 @@ export class UserRepository {
 
   async updatePassword(
     userId: string,
-    data: UpdateUserPasswordDto
+    data: UpdateUserPasswordDto,
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { id: userId },
@@ -88,7 +102,7 @@ export class UserRepository {
 
   async updateUserVerification(
     email: string,
-    data: UpdateUserVerificationDto
+    data: UpdateUserVerificationDto,
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { email },
@@ -98,7 +112,7 @@ export class UserRepository {
 
   async updateUserPasswordToken(
     email: string,
-    data: UpdatePasswordTokenDto
+    data: UpdatePasswordTokenDto,
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { email },
@@ -108,7 +122,7 @@ export class UserRepository {
 
   async updateUserPassword(
     email: string,
-    data: UpdatePasswordDto
+    data: UpdatePasswordDto,
   ): Promise<void> {
     await this.prismaService.user.update({
       where: { email },

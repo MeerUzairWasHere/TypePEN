@@ -53,8 +53,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
           message:
             typeof response === "string"
               ? response
-              : (response as { message?: string | string[] }).message?.toString() ||
-                exception.message,
+              : (
+                  response as { message?: string | string[] }
+                ).message?.toString() || exception.message,
         },
       };
     }
@@ -89,9 +90,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
   }
 
-  private formatPrismaError(
-    error: Prisma.PrismaClientKnownRequestError
-  ): {
+  private formatPrismaError(error: Prisma.PrismaClientKnownRequestError): {
     statusCode: number;
     errorResponse: ErrorResponse;
   } {

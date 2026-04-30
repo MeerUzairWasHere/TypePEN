@@ -10,7 +10,12 @@ import {
   VerifyEmailInputDto,
 } from "./dto";
 import { BadRequestError, UnauthenticatedError } from "../errors";
-import { comparePassword, createTokenUser, hashPassword, hashString } from "../../utils";
+import {
+  comparePassword,
+  createTokenUser,
+  hashPassword,
+  hashString,
+} from "../../utils";
 import { CompanyService } from "../company/company.service";
 import { EmailService } from "../email/email.service";
 import { UserRepository } from "../users/users.repository";
@@ -20,7 +25,7 @@ export class AuthService {
   constructor(
     private readonly emailService: EmailService,
     private readonly userRepository: UserRepository,
-    private readonly companyService: CompanyService
+    private readonly companyService: CompanyService,
   ) {}
 
   async registerUser(data: RegisterInputDto, origin: string) {
@@ -31,6 +36,17 @@ export class AuthService {
 
     const hashedPassword = await hashPassword(password);
     const verificationToken = randomBytes(40).toString("hex");
+
+    const emailExists = await this.userRepository.checkEmailExists(email);
+
+    const usernameExists =
+      await this.userRepository.checkUsernameExists(username);
+
+    if (emailExists) {
+      throw new BadRequestError("Email already exists");
+    } else if (usernameExists) {
+      throw new BadRequestError("Username already exists");
+    }
 
     await this.userRepository.createUser({
       name,

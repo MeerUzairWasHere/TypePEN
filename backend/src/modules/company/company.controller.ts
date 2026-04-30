@@ -14,7 +14,7 @@ import { Role } from "@prisma/client";
 import { Roles } from "../common/decorators";
 import { AuthGuard, RolesGuard } from "../common/guards";
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "./dto";
-import { ZodValidationPipe } from "../pipes/zod-validation.pipe";
+import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
 import {
   validateCompanyCreateInput,
   validateCompanyUpdateInput,
@@ -31,7 +31,7 @@ export class CompanyController {
   @HttpCode(HttpStatus.CREATED)
   createCompany(
     @Body(new ZodValidationPipe(validateCompanyCreateInput))
-    body: CompanyCreateInputDto
+    body: CompanyCreateInputDto,
   ) {
     return this.companyService.createCompany(body);
   }
@@ -47,7 +47,7 @@ export class CompanyController {
   updateCompany(
     @Param("companyId") companyId: string,
     @Body(new ZodValidationPipe(validateCompanyUpdateInput))
-    body: CompanyUpdateInputDto
+    body: CompanyUpdateInputDto,
   ) {
     return this.companyService.updateComany({
       companyId,

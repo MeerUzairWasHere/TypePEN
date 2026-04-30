@@ -16,7 +16,7 @@ import {
   UpdatePasswordInputDto,
   UserUpdateInputDto,
 } from "./dto";
-import { ZodValidationPipe } from "../pipes/zod-validation.pipe";
+import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
 import { attachCookiesToResponse } from "../../utils";
 import {
   validateUpdatePasswordInput,
