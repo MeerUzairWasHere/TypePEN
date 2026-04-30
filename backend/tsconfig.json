@@ -12,7 +12,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "lib": ["ES2021", "DOM"],
-    "moduleResolution": "node",
+    // "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["node_modules/@types", "src/types"]
   },
