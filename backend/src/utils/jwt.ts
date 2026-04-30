@@ -1,13 +1,14 @@
+import { Response } from "express";
 import pkg from "jsonwebtoken";
 const { sign, verify } = pkg;
 
 interface JWTOptions {
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
 }
 
 interface AttachCookiesOptions {
-  res: any; // Adjust this type based on your framework (e.g., `Response` from Express)
-  user: Record<string, any>;
+  res: Response;
+  user: object;
   refreshToken: string;
 }
 
@@ -15,14 +16,15 @@ export const createJWT = ({ payload }: JWTOptions): string => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
-  const token = sign(payload, process.env.JWT_SECRET);
-  return token;
+
+  return sign(payload, process.env.JWT_SECRET);
 };
 
-export const isTokenValid = (token: string): any => {
+export const isTokenValid = (token: string): unknown => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
+
   return verify(token, process.env.JWT_SECRET);
 };
 
@@ -51,23 +53,3 @@ export const attachCookiesToResponse = ({
     expires: new Date(Date.now() + longerExp),
   });
 };
-
-// // Optional: Attach a single cookie (Uncomment and use if needed)
-// export const attachSingleCookieToResponse = ({
-//   res,
-//   user,
-// }: {
-//   res: any; // Adjust this type based on your framework
-//   user: Record<string, any>;
-// }): void => {
-//   const token = createJWT({ payload: user });
-
-//   const oneDay = 1000 * 60 * 60 * 24;
-
-//   res.cookie("token", token, {
-//     httpOnly: true,
-//     expires: new Date(Date.now() + oneDay),
-//     secure: process.env.NODE_ENV === "production",
-//     signed: true,
-//   });
-// };

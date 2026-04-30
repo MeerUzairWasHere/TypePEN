@@ -1,15 +1,15 @@
 {
   "name": "type-pen",
   "version": "3.1.0",
-  "description": "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
+  "description": "A TypeScript-based backend starter with PostgreSQL, NestJS, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node ./dist/index.js",
-    "build": "tsc",
-    "dev": "npx prisma generate && npm run start",
-    "migrate": "npx prisma migrate dev",
-    "db:clear": "npx prisma migrate reset",
-    "generate": "npx prisma generate",
+    "start": "node ./dist/index.js",
+    "build": "npx prisma generate --schema prisma/database.prisma && tsc",
+    "dev": "npx prisma generate --schema prisma/database.prisma && tsx watch src/index.ts",
+    "migrate": "npx prisma migrate dev --schema prisma/database.prisma",
+    "db:clear": "npx prisma migrate reset --schema prisma/database.prisma",
+    "generate": "npx prisma generate --schema prisma/database.prisma",
     "setup": "npm i",
     "db": "docker rm -f typepen-postgres || true && docker-compose up -d",
     "db:clean": "docker rm -f typepen-postgres && docker-compose up -d",
@@ -29,16 +29,17 @@
   },
   "homepage": "https://github.com/MeerUzairWasHere/TypePEN#readme",
   "dependencies": {
+    "@nestjs/common": "^10.4.20",
+    "@nestjs/core": "^10.4.20",
+    "@nestjs/platform-express": "^10.4.20",
     "@aws-sdk/client-s3": "^3.956.0",
     "@aws-sdk/s3-request-presigner": "^3.956.0",
     "@prisma/client": "^6.15.0",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
     "datauri": "^4.1.0",
     "dotenv": "^17.2.1",
     "express": "^4.18.2",
-    "express-async-errors": "^3.1.1",
     "express-fileupload": "^1.5.2",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
@@ -47,6 +48,8 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "resend": "^6.5.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
     "zod": "^4.1.4"
   },
@@ -59,6 +62,8 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.3.0",
     "@types/swagger-ui-express": "^4.1.8",
-    "prisma": "^6.15.0"
+    "prisma": "^6.15.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.2"
   }
 }

@@ -1,44 +1,44 @@
-import { User, Token } from "@prisma/client";
-import { IPrismaService } from "../interfaces";
+import { Injectable } from "@nestjs/common";
+import { Token, User } from "@prisma/client";
 import {
   CreateTokenDto,
   UpdatePasswordDto,
-  UserCreateInputDto,
-  UserUpdateInputDto,
   UpdatePasswordTokenDto,
   UpdateUserPasswordDto,
   UpdateUserVerificationDto,
+  UserCreateInputDto,
+  UserUpdateInputDto,
 } from "../dto";
+import { PrismaService } from "../modules/database/prisma.service";
 
+@Injectable()
 export class UserRepository {
-  constructor(private prismaService: IPrismaService) {}
-
-  // ==================== User Query Operations ====================
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getUserCount(): Promise<number> {
-    return await this.prismaService.user.count();
+    return this.prismaService.user.count();
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
-    return await this.prismaService.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: { email },
     });
   }
 
   async findById(userId: string): Promise<User | null> {
-    return await this.prismaService.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: { id: userId },
     });
   }
 
   async findByIdBasic(userId: string): Promise<User | null> {
-    return await this.prismaService.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: { id: userId },
     });
   }
 
   async findByIdProfile(userId: string): Promise<User | null> {
-    return await this.prismaService.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: { id: userId },
     });
   }
@@ -47,7 +47,7 @@ export class UserRepository {
     email: string,
     excludeUserId: string
   ): Promise<User | null> {
-    return await this.prismaService.user.findFirst({
+    return this.prismaService.user.findFirst({
       where: {
         email,
         id: { not: excludeUserId },
@@ -63,16 +63,14 @@ export class UserRepository {
     return !!user;
   }
 
-  // ==================== User Mutation Operations ====================
-
   async createUser(data: UserCreateInputDto): Promise<User> {
-    return await this.prismaService.user.create({
+    return this.prismaService.user.create({
       data,
     });
   }
 
   async update(userId: string, data: UserUpdateInputDto): Promise<User> {
-    return await this.prismaService.user.update({
+    return this.prismaService.user.update({
       where: { id: userId },
       data,
     });
@@ -124,25 +122,21 @@ export class UserRepository {
     });
   }
 
-  // ==================== Token Operations ====================
-
   async findTokenByUserId(userId: string): Promise<Token | null> {
-    return await this.prismaService.token.findFirst({
+    return this.prismaService.token.findFirst({
       where: { user: { id: userId } },
     });
   }
 
   async createToken(data: CreateTokenDto): Promise<Token> {
-    return await this.prismaService.token.create({
+    return this.prismaService.token.create({
       data,
     });
   }
 
   async deleteUserTokens(userId: string): Promise<void> {
     await this.prismaService.token.deleteMany({
-      where: {
-        userId: userId,
-      },
+      where: { userId },
     });
   }
 }

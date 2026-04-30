@@ -2,9 +2,9 @@ export const openApiSpec = {
   openapi: "3.0.0",
   info: {
     title: "TypePEN",
-    version: "2.0.0",
+    version: "3.1.0",
     description:
-      "A TypeScript-based backend starter with PostgreSQL, Express, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
+      "A TypeScript-based backend starter with PostgreSQL, NestJS, and Node.js. Flexible and frontend-agnostic—connect with React, Angular, Vue, or any framework!",
     contact: {
       name: "Github Repository",
       url: "https://github.com/MeerUzairWasHere/TypePEN",

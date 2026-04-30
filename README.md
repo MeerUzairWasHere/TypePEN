@@ -1,21 +1,23 @@
-# TypeScript Backend Starter with PostgreSQL, Express, and Node.js
+# TypeScript Backend Starter with PostgreSQL, NestJS, and Node.js
 
-A powerful and flexible **TypeScript backend boilerplate** built on top of **Express** and **PostgreSQL**, designed with a **NestJS-inspired modular architecture** — offering both **structure and freedom**.
+A powerful and flexible **TypeScript backend boilerplate** built on top of **NestJS** and **PostgreSQL**, designed for a clean modular backend without the custom Express wiring layer.
 
-This starter brings the best of both worlds:
+This starter includes:
 
-* **NestJS-style project structure** (with `guards`, `filters`, `decorators`, `dto`, `repositories`, etc.)
-* **Express-level flexibility**
-* **Class-based architecture** with **Dependency Injection (DI)** for easy scalability and plugin-based extensibility.
+* **Native NestJS modules, controllers, guards, and filters**
+* **Zod-based request validation**
+* **Prisma ORM for PostgreSQL**
+* **Cookie-based auth with role-aware guards**
+* **Swagger/OpenAPI docs**
 
 ---
 
 ## ✨ Features
 
 * ⚙️ **TypeScript** — Strong typing for reliability and better DX.
-* 🚀 **Express** — Lightweight, unopinionated, and extremely flexible.
-* 🧩 **NestJS-inspired architecture** — Organized modules with `controllers`, `services`, `guards`, `filters`, and more.
-* 🧠 **Dependency Injection (DI)** — Loosely coupled components for easier testing and plugin integration.
+* 🚀 **NestJS** — Structured backend framework with DI and HTTP abstractions.
+* 🧩 **Modular architecture** — Organized controllers, services, guards, filters, and repositories.
+* 🧠 **Dependency Injection (DI)** — Loosely coupled components for easier testing and extension.
 * 🗄️ **PostgreSQL + Prisma ORM** — Powerful schema management and migrations.
 * 🔐 **Guards, Filters, Decorators** — Extendable request handling and validation patterns.
 * 📦 **DTOs and Validators (Zod)** — Type-safe input validation.
@@ -41,14 +43,13 @@ backend/
 │   ├── filters/
 │   ├── guards/
 │   ├── interfaces/
-│   ├── middlewares/
 │   ├── repositories/
-│   ├── routes/
+│   ├── pipes/
 │   ├── services/
 │   ├── types/
 │   ├── utils/
 │   ├── validators/
-│   ├── container.ts          # Dependency Injection container
+│   ├── app.module.ts         # Root Nest module
 │   ├── index.ts              # Application entry point
 │   └── openApiSpec.ts        # Swagger/OpenAPI definition
 ├── .env
@@ -58,7 +59,7 @@ backend/
 └── README.md
 ```
 
-> This structure follows the **NestJS philosophy of modular separation**, but keeps **Express’s unopinionated nature**, giving you full control over middleware and routing.
+> This structure follows the **NestJS modular model** while keeping the existing Prisma repository and service layers intact.
 
 ---
 
@@ -100,7 +101,7 @@ npm run db
 ### 4. Run Migrations
 
 ```bash
-npm run dev:migrate
+npm run migrate
 ```
 
 ### 5. Start the Server
@@ -115,7 +116,7 @@ Server will start on [http://localhost:3000](http://localhost:3000)
 
 ## 🧩 Dependency Injection and Extensibility
 
-This boilerplate uses a **class-based architecture** with a **DI container** (`container.ts`), enabling clean dependency management between services, repositories, and controllers.
+This boilerplate uses **NestJS dependency injection**, so controllers, services, repositories, and guards are wired through providers instead of a manual container.
 
 Example:
 
@@ -130,14 +131,14 @@ export class UserService {
 }
 ```
 
-This design allows future **plugins** or **modules** (e.g., EmailService, CacheService) to be added seamlessly.
+This design allows future **modules** or **providers** (e.g. EmailService, CacheService) to be added without changing the application bootstrap.
 
 ---
 
 ## 🧱 Framework Philosophy
 
-* **NestJS-like modularity** for organization.
-* **Express-like flexibility** for freedom.
+* **NestJS modularity** for organization.
+* **Prisma-backed services and repositories** for data access.
 * **Class-based design** for scalability.
 * **DI-first approach** for maintainability.
 

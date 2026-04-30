@@ -1,0 +1,12 @@
+{
+  "name": "typepen-workspace",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix backend run build",
+    "dev": "npm --prefix backend run dev",
+    "start": "npm --prefix backend run start",
+    "migrate": "npm --prefix backend run migrate",
+    "generate": "npm --prefix backend run generate",
+    "setup": "npm --prefix backend run setup"
+  }
+}
