@@ -9,14 +9,14 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
-import { CurrentUser } from "../../common/decorators";
-import { AuthGuard } from "../../common/guards";
+import { CurrentUser } from "../common/decorators";
+import { AuthGuard } from "../common/guards";
 import {
   TokenUserDto,
   UpdatePasswordInputDto,
   UserUpdateInputDto,
 } from "./dto";
-import { ZodValidationPipe } from "../../pipes/zod-validation.pipe";
+import { ZodValidationPipe } from "../pipes/zod-validation.pipe";
 import { attachCookiesToResponse } from "../../utils";
 import {
   validateUpdatePasswordInput,

@@ -6,7 +6,7 @@ import {
   VerificationEmailDto,
   WelcomeEmailDto,
 } from "./dto";
-import { NotFoundError } from "../../errors";
+import { NotFoundError } from "../errors";
 import { CompanyService } from "../company/company.service";
 
 @Injectable()

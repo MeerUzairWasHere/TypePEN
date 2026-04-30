@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Request, Response } from "express";
 import { UnauthenticatedError } from "../../errors";
-import { PrismaService } from "../../modules/database/prisma.service";
-import { attachCookiesToResponse, isTokenValid } from "../../utils";
-import { TokenUserDto } from "../../dto";
+import { PrismaService } from "../../database/prisma.service";
+import { attachCookiesToResponse, isTokenValid } from "../../../utils";
+import { TokenUserDto } from "../../users/dto";
 
 interface TokenPayload {
   user: TokenUserDto;

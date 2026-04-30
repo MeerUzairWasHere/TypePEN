@@ -8,8 +8,8 @@ import {
   UpdateUserVerificationDto,
   UserCreateInputDto,
   UserUpdateInputDto,
-} from "../dto";
-import { PrismaService } from "../modules/database/prisma.service";
+} from "./dto";
+import { PrismaService } from "../database/prisma.service";
 
 @Injectable()
 export class UserRepository {

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Company } from "@prisma/client";
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "./dto";
-import { ConflictError } from "../../errors";
+import { ConflictError } from "../errors";
 import { CompanyRepository } from "./company.repository";
 
 @Injectable()

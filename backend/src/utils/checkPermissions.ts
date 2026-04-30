@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
-import { UnauthorizedError } from "../errors";
-import { TokenUserDto } from "../dto";
+import { UnauthorizedError } from "../modules/errors";
+import { TokenUserDto } from "../modules/users/dto";
 
 export const checkPermissions = (
   requestUser: TokenUserDto,

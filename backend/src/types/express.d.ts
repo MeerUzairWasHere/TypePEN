@@ -1,4 +1,4 @@
-import { TokenUserDto } from "../dto";
+import { TokenUserDto } from "../modules/users/dto";
 import * as express from "express";
 
 declare global {

@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { TokenUserDto } from "../dto";
+import { TokenUserDto } from "../modules/users/dto";
 
 export const createTokenUser = (user: User): TokenUserDto => {
   return {

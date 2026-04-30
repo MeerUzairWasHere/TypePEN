@@ -11,10 +11,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Role } from "@prisma/client";
-import { Roles } from "../../common/decorators";
-import { AuthGuard, RolesGuard } from "../../common/guards";
+import { Roles } from "../common/decorators";
+import { AuthGuard, RolesGuard } from "../common/guards";
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "./dto";
-import { ZodValidationPipe } from "../../pipes/zod-validation.pipe";
+import { ZodValidationPipe } from "../pipes/zod-validation.pipe";
 import {
   validateCompanyCreateInput,
   validateCompanyUpdateInput,

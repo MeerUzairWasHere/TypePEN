@@ -4,8 +4,8 @@ import {
   UpdatePasswordInputDto,
   UserUpdateInputDto,
 } from "./dto";
-import { UnauthenticatedError } from "../../errors";
-import { UserRepository } from "../../repositories";
+import { UnauthenticatedError } from "../errors";
+import { UserRepository } from "./users.repository";
 import { comparePassword, createTokenUser, hashPassword } from "../../utils";
 
 @Injectable()

@@ -10,7 +10,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import swaggerUi from "swagger-ui-express";
 import { AppModule } from "./app.module";
-import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
+import { AllExceptionsFilter } from "./modules/common/filters/all-exceptions.filter";
 import { openApiSpec } from "./openApiSpec";
 
 async function bootstrap() {

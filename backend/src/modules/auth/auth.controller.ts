@@ -19,10 +19,10 @@ import {
   TokenUserDto,
   VerifyEmailInputDto,
 } from "./dto";
-import { CurrentUser } from "../../common/decorators";
-import { AuthGuard } from "../../common/guards";
+import { CurrentUser } from "../common/decorators";
+import { AuthGuard } from "../common/guards";
 import { attachCookiesToResponse } from "../../utils";
-import { ZodValidationPipe } from "../../pipes/zod-validation.pipe";
+import { ZodValidationPipe } from "../pipes/zod-validation.pipe";
 import {
   validateForgotPasswordInput,
   validateLoginInput,

@@ -9,11 +9,11 @@ import {
   TokenUserDto,
   VerifyEmailInputDto,
 } from "./dto";
-import { BadRequestError, UnauthenticatedError } from "../../errors";
+import { BadRequestError, UnauthenticatedError } from "../errors";
 import { comparePassword, createTokenUser, hashPassword, hashString } from "../../utils";
 import { CompanyService } from "../company/company.service";
 import { EmailService } from "../email/email.service";
-import { UserRepository } from "../../repositories";
+import { UserRepository } from "../users/users.repository";
 
 @Injectable()
 export class AuthService {
