@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { Prisma } from "@prisma/client";
+import type postgres from "postgres";
 import { ZodError } from "zod";
 
 interface ErrorResponse {
@@ -71,8 +71,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       };
     }
 
-    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      return this.formatPrismaError(exception);
+    if (this.isPostgresError(exception)) {
+      return this.formatPostgresError(exception);
     }
 
     const error = exception as Error & {
@@ -90,27 +90,28 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
   }
 
-  private formatPrismaError(error: Prisma.PrismaClientKnownRequestError): {
+  private isPostgresError(error: unknown): error is postgres.PostgresError {
+    return (
+      error instanceof Error &&
+      error.name === "PostgresError" &&
+      typeof (error as Partial<postgres.PostgresError>).code === "string"
+    );
+  }
+
+  private formatPostgresError(error: postgres.PostgresError): {
     statusCode: number;
     errorResponse: ErrorResponse;
   } {
-    if (error.code === "P2002") {
+    if (error.code === "23505") {
       return {
         statusCode: HttpStatus.CONFLICT,
         errorResponse: {
           statusCode: HttpStatus.CONFLICT,
           message: "Duplicate value violates unique constraint",
-          errors: error.meta,
-        },
-      };
-    }
-
-    if (error.code === "P2025") {
-      return {
-        statusCode: HttpStatus.NOT_FOUND,
-        errorResponse: {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: "Record not found",
+          errors: {
+            constraint: error.constraint_name,
+            detail: error.detail,
+          },
         },
       };
     }

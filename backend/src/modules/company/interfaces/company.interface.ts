@@ -1,5 +1,5 @@
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "../dto";
-import { Company } from "@prisma/client";
+import { Company } from "../../database/schema";
 
 export interface ICompanyService {
   createCompany(params: CompanyCreateInputDto): Promise<Company>;

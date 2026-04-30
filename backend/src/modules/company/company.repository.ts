@@ -1,39 +1,69 @@
 import { Injectable } from "@nestjs/common";
-import { Company } from "@prisma/client";
-import { PrismaService } from "../database/prisma.service";
+import { randomUUID } from "crypto";
+import { eq } from "drizzle-orm";
+import { DatabaseService } from "../database/database.service";
+import { companies, Company } from "../database/schema";
+import { NotFoundError } from "../errors";
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "./dto";
 
 @Injectable()
 export class CompanyRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async findFirst(): Promise<Company | null> {
-    return this.prismaService.company.findFirst();
+    const [company] = await this.databaseService.db
+      .select()
+      .from(companies)
+      .limit(1);
+
+    return company ?? null;
   }
 
   async findById(companyId: string): Promise<Company | null> {
-    return this.prismaService.company.findUnique({
-      where: { id: companyId },
-    });
+    const [company] = await this.databaseService.db
+      .select()
+      .from(companies)
+      .where(eq(companies.id, companyId))
+      .limit(1);
+
+    return company ?? null;
   }
 
   async create(data: CompanyCreateInputDto): Promise<Company> {
-    return this.prismaService.company.create({
-      data,
-    });
+    const [company] = await this.databaseService.db
+      .insert(companies)
+      .values({
+        ...data,
+        id: randomUUID(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    if (!company) {
+      throw new Error("Failed to create company");
+    }
+
+    return company;
   }
 
   async update(
     companyId: string,
     data: CompanyUpdateInputDto
   ): Promise<Company> {
-    return this.prismaService.company.update({
-      where: { id: companyId },
-      data,
-    });
+    const [company] = await this.databaseService.db
+      .update(companies)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(companies.id, companyId))
+      .returning();
+
+    if (!company) {
+      throw new NotFoundError("Record not found");
+    }
+
+    return company;
   }
 
   async deleteAll(): Promise<void> {
-    await this.prismaService.company.deleteMany();
+    await this.databaseService.db.delete(companies);
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Company } from "@prisma/client";
+import { Company } from "../database/schema";
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "./dto";
 import { ConflictError } from "../errors";
 import { CompanyRepository } from "./company.repository";

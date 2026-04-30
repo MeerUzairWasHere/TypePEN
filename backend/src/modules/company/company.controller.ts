@@ -10,9 +10,9 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { Role } from "@prisma/client";
 import { Roles } from "../common/decorators";
 import { AuthGuard, RolesGuard } from "../common/guards";
+import { Role } from "../database/schema";
 import { CompanyCreateInputDto, CompanyUpdateInputDto } from "./dto";
 import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
 import {

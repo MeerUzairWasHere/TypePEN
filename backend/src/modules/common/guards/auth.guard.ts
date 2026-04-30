@@ -1,7 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
 import { UnauthenticatedError } from "../../errors";
-import { PrismaService } from "../../database/prisma.service";
+import { DatabaseService } from "../../database/database.service";
+import { tokens } from "../../database/schema";
 import { attachCookiesToResponse, isTokenValid } from "../../../utils";
 import { TokenUserDto } from "../../users/dto";
 
@@ -12,7 +14,7 @@ interface TokenPayload {
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
@@ -35,13 +37,17 @@ export class AuthGuard implements CanActivate {
 
       const payload = isTokenValid(refreshToken) as TokenPayload;
 
-      const existingToken = await this.prismaService.token.findFirst({
-        where: {
-          userId: payload.user.id,
-          refreshToken: payload.refreshToken,
-          isValid: true,
-        },
-      });
+      const [existingToken] = await this.databaseService.db
+        .select()
+        .from(tokens)
+        .where(
+          and(
+            eq(tokens.userId, payload.user.id),
+            eq(tokens.refreshToken, payload.refreshToken ?? ""),
+            eq(tokens.isValid, true),
+          ),
+        )
+        .limit(1);
 
       if (!existingToken) {
         throw new UnauthenticatedError("Authentication Invalid");

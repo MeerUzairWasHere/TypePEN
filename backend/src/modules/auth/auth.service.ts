@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { Role } from "@prisma/client";
 import { randomBytes } from "crypto";
 import {
   ForgotPasswordInputDto,
@@ -19,6 +18,7 @@ import {
 import { CompanyService } from "../company/company.service";
 import { EmailService } from "../email/email.service";
 import { UserRepository } from "../users/users.repository";
+import { Role } from "../database/schema";
 
 @Injectable()
 export class AuthService {
@@ -62,6 +62,7 @@ export class AuthService {
     const hasCompany = await this.companyService.getCompany();
 
     if (hasCompany?.verified_resend_domain) {
+console.log(hasCompany.verified_resend_domain);
       await this.emailService.sendVerificationEmail({
         name,
         email,

@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-export interface IDatabaseService extends PrismaClient {
+export interface IDatabaseService {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   healthCheck(): Promise<boolean>;

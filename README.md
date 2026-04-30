@@ -6,7 +6,7 @@ This starter includes:
 
 * **Native NestJS modules, controllers, guards, and filters**
 * **Zod-based request validation**
-* **Prisma ORM for PostgreSQL**
+* **Drizzle ORM for PostgreSQL**
 * **Cookie-based auth with role-aware guards**
 * **Swagger/OpenAPI docs**
 
@@ -18,7 +18,7 @@ This starter includes:
 * 🚀 **NestJS** — Structured backend framework with DI and HTTP abstractions.
 * 🧩 **Modular architecture** — Organized controllers, services, guards, filters, and repositories.
 * 🧠 **Dependency Injection (DI)** — Loosely coupled components for easier testing and extension.
-* 🗄️ **PostgreSQL + Prisma ORM** — Powerful schema management and migrations.
+* 🗄️ **PostgreSQL + Drizzle ORM** — Type-safe schema management and migrations.
 * 🔐 **Guards, Filters, Decorators** — Extendable request handling and validation patterns.
 * 📦 **DTOs and Validators (Zod)** — Type-safe input validation.
 * 🐳 **Docker Support** — Instantly spin up PostgreSQL locally.
@@ -33,7 +33,8 @@ This starter includes:
 backend/
 ├── dist/
 ├── node_modules/
-├── prisma/
+├── drizzle/
+├── drizzle.config.ts
 ├── src/
 │   ├── configs/
 │   ├── controllers/
@@ -59,7 +60,7 @@ backend/
 └── README.md
 ```
 
-> This structure follows the **NestJS modular model** while keeping the existing Prisma repository and service layers intact.
+> This structure follows the **NestJS modular model** with Drizzle-backed repository and service layers.
 
 ---
 
@@ -104,6 +105,12 @@ npm run db
 npm run migrate
 ```
 
+To generate a new SQL migration after changing the Drizzle schema:
+
+```bash
+npm run generate
+```
+
 ### 5. Start the Server
 
 ```bash
@@ -138,7 +145,7 @@ This design allows future **modules** or **providers** (e.g. EmailService, Cache
 ## 🧱 Framework Philosophy
 
 * **NestJS modularity** for organization.
-* **Prisma-backed services and repositories** for data access.
+* **Drizzle-backed services and repositories** for data access.
 * **Class-based design** for scalability.
 * **DI-first approach** for maintainability.
 
